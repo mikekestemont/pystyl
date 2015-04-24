@@ -22,7 +22,7 @@ class Experiment:
         self.MFI = 100
         self.ngram_type = "word" # sklearn's analyser: word', 'char', 'char_wb'
         self.ngram_size = 1 # we only support one ngram-type like stylo right now
-        self.method = "cluster"
+        self.method = "pca"#"cluster"
 
     def preprocess(self):
         self.corpus = Corpus.load(self.data_home)
@@ -66,18 +66,26 @@ class Experiment:
                 ax_labels[i].set_color(colors[target_index])
             plt.show()
         elif self.method == "pca":
-            authors = [self.corpus.target_names[t] for t in self.corpus.targets]
-            sklearn_pca = sklearnPCA(n_components=2)
-            Xr = sklearn_pca.fit_transform(self.X.toarray())
-            plt.figure()
-            author_marks = list(plt.MarkerStyle.markers)[:len(self.corpus.targets)]
-            for i in range(Xr.shape[0]):
-                marker = author_marks[self.corpus.targets[i]]
-                c1 = plt.scatter(Xr[i,0], Xr[i,1], color="r", marker=marker, label="Charlotte")
-            plt.xlabel('1st PC')
-            plt.ylabel('2nd PC')
-            #plt.legend([c1, c2, c3], ["Char", "Anne", "Em"])
-            plt.title('Principal Components Analysis')
+            from sklearn.preprocessing import StandardScaler
+            from sklearn.decomposition import PCA
+            Xs = StandardScaler().fit_transform(self.X.toarray())
+            P = PCA(n_components=2)
+            Xr = P.fit_transform(Xs)
+            loadings = P.components_.transpose()
+            #sb.set_style("darkgrid")
+            fig, ax1 = plt.subplots()
+            # first samples:    
+            x1, x2 = Xr[:,0], Xr[:,1]
+            ax1.scatter(x1, x2, 100, edgecolors='none', facecolors='none');
+            for x,y,l in zip(x1, x2, self.corpus.titles):
+                ax1.text(x, y, l ,ha='center', va="center", size=10, color="darkgrey")
+            # now loadings:
+            #sb.set_style("dark")
+            ax2 = ax1.twinx().twiny()
+            l1, l2 = loadings[:,0], loadings[:,1]
+            ax2.scatter(l1, l2, 100, edgecolors='none', facecolors='none');
+            for x,y,l in zip(l1, l2, self.vectorizer.get_feature_names()):
+                ax2.text(x, y, l ,ha='center', va="center", size=10, color="black")
             plt.show()
 
     def analysis(self):
