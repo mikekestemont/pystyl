@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+  <head>
+   <meta charset="utf-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <title>PyStyl</title>
+    <meta name="description" content="">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+   <link rel="stylesheet" href="{{ url_for('.static', filename='css/styles.css')}}">
+  </head>
+
+  <body>
+
+  <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+
+        <div class="wrap">
+          <header>
+          </header>
+
+        <div class="pure-menu pure-menu-horizontal">
+            <ul class="pure-menu-list">
+                <li id="import" class="pure-menu-item"><a href="#" class="pure-menu-link">Import Data</a></li>
+                <li id="pystylize" class="pure-menu-item"><a href="#" class="pure-menu-link">Pystylize</a></li>
+                <li id="visualize" class="pure-menu-item"><a href="#" class="pure-menu-link">Visualize</a></li>
+            </ul>
+        </div>  
+
+        <div class="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+    </div>
+    <footer class="site-footer">
+       This software is maintained and executed by Mike Kestemont and Folgert Karsdorp<br>
+       For more information send an e-mail to: mike.kestemont@gmail.com
+     </footer>
+
+  </body>
+</html>

@@ -1,0 +1,89 @@
+body, h2, h3, .pure-g [class *="pure-u"] {
+    margin-top: 10px;
+    font-family: 'Lucida Grande';
+    font-size: 11px;
+    background-color:#f9f9f9;
+    line-height: 17px;
+    color: #000000;
+}
+
+html, body {
+  height: 100%;
+}
+
+.wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2em;
+    margin-top: 30px;
+    min-height: 100%;
+    margin-bottom: -80px;     
+}
+
+.content {
+    margin-top: 30px;
+    line-height: 1.6em;
+}
+
+.pure-menu {
+    text-align: center;
+    font: 'Lucida Grande';
+    text-transform: uppercase;
+    color: #000000;
+}
+
+header {
+    margin: 0;
+    text-align: center;
+    font:16px 'Lucida Grande';
+    font-weight: 100%;
+    letter-spacing:0.1em;
+    padding: 2.0em 2em 0.5em;
+    background: url(../images/gun.svg) no-repeat;
+    background-position: center;
+    background-size: 118px;
+ }
+
+.pure-menu-link {
+    color: #000000;
+    text-decoration: none;
+}
+
+.pure-menu-link:hover {
+    background-color: #9D9F8B;
+    color: #ffffff;
+}
+
+.pystyl-button {
+    display: block;
+    width: 20%;
+}
+
+#image-output {
+    margin-left: 30px;
+}
+
+#settings input, #settings select, #metrics input, #metrics select, #visuals input, #visuals select {
+    width: 40%;
+    padding: 0.5em 1em;
+    border:0px solid #fff;
+    outline-style:none;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+
+.wrap:after {
+  content: "";
+  display: block;
+}
+
+.site-footer, .wrap:after {
+  height: 30px; 
+}
+
+.site-footer {
+  text-align: center;
+  font-size:0.7em;
+  font-weight:100;
+}
