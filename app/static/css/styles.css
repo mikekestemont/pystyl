@@ -20,27 +20,37 @@ html, body {
     margin-bottom: -80px;     
 }
 
+.pure-g > div {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    min-height: 500px;
+    box-sizing: border-box;
+}
+
+.l-box {
+   border-left:1px solid #9D9F8B;
+   padding: 1em;
+}
+
 .content {
     margin-top: 30px;
     line-height: 1.6em;
 }
 
 .pure-menu {
-    text-align: center;
+    text-align: left;
     font: 'Lucida Grande';
     text-transform: uppercase;
     color: #000000;
 }
 
 header {
-    margin: 0;
-    text-align: center;
+    text-align: left;
     font:16px 'Lucida Grande';
     font-weight: 100%;
-    letter-spacing:0.1em;
     padding: 2.0em 2em 0.5em;
     background: url(../images/gun.svg) no-repeat;
-    background-position: center;
+    background-position: left;
     background-size: 118px;
  }
 
