@@ -4,11 +4,12 @@ import os
 import codecs
 import glob
 
-from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.tokenize import RegexpTokenizer
-from sklearn.feature_extraction.text import CountVectorizer # import this for tokenizer
 
 import utils
+
+def untokenize(words):
+    return ' '.join(words)
 
 class Corpus:
 
@@ -85,7 +86,7 @@ class Corpus:
 
         # segment:
         if not segment_size:
-            self.texts = tokenized_texts
+            self.texts = [untokenize(t) for t in tokenized_texts]
         else:
             if not step_size:
                 step_size = segment_size
@@ -103,7 +104,8 @@ class Corpus:
                     start_idx += step_size
                     end_idx += step_size
 
-            self.texts, self.titles, self.target_ints = texts, titles, target_ints
+            self.texts = [untokenize(t) for t in texts]
+            self.titles, self.target_ints = titles, target_ints
 
     def __len__(self):
         return len(self.texts)
@@ -114,7 +116,7 @@ class Corpus:
     def __str__(self):
         info_string = "Corpus contains:\n"
         for text, title, target_int in zip(self.texts, self.titles, self.target_ints):
-            info_string+="\t- %s\t(cat: %s):\t%r[...]\n" % (title, self.target_idx[target_int], text[:7])
+            info_string += "\t- %s\t(cat: %s):\t%r[...]\n" % (title, self.target_idx[target_int], ' '.join(text[:7]))
         return info_string
 
             

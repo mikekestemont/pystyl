@@ -1,24 +1,12 @@
 """
 params:
-- input directory, with title(_author(_genre(_date))).txt
-- segment_size (tokens)
-- minimum text size (tokens) / max text size
 - visualize / classify
-- nb_mfi
 - which tokenizer
-- vector space model: tf, tfidf, binary, std
 - distance metric: euclidean/cosine, manhattan, minmax, 
-- scale: bool
-- to unit vector
-- ngram_type, ngram_size, char_ngrams_across_words
-- culling rate
 - method for visualize: pca or hac or vnc or tsne
 - names fontsizes, what to include: author, genre, idx etc.
 - outfilename
 - settingsfilename
-- remove pronouns
-- lowercase or not
-- language
 - select files manually
 
 # differences:
@@ -30,14 +18,27 @@ params:
 """
 
 
-from experiment import Experiment
+#from experiment import Experiment
 from corpus import Corpus
+from vectorization import Vectorizer
+from analysis import pca, tsne
 
 c = Corpus()
-c.add_texts_from_directory(directory='../data/dummy1')
+#c.add_texts_from_directory(directory='../data/dummy1')
 c.add_texts_from_directory(directory='../data/dummy2')
-c.segment(segment_size=5000, step_size=1000, min_size=1000, max_size=20000)
-print(c)
+c.segment(segment_size=2000, step_size=None, min_size=1000, max_size=20000)
+v = Vectorizer(mfi=100, ngram_type='word',
+               ngram_size=1, vector_space='tf_std',
+               lowercase=True, vocabulary=None)
+
+X = v.fit_transform(c.texts)
+X = v.remove_pronouns(X, language='en')
+pca(X=X, sample_names=c.titles,
+    nb_dimensions=3, nb_clusters=3,
+    feature_names=v.features, sample_categories=(c.target_ints, c.target_idx))
+#tsne(X=X, sample_names=c.titles, sample_categories=(c.target_ints, c.target_idx))
+
+#### 3D barplots for word frequencies!
 
 #for feature in feature_type:
 #    e.add_feature((ngram_type, ngram_range, nb_mfi, culling_rate, remove_pronouns, lowercase) # stacking features in self.X
