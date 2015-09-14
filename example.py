@@ -1,3 +1,5 @@
+import os
+
 #from experiment import Experiment
 from PyStyl.corpus import Corpus
 from PyStyl.vectorization import Vectorizer
