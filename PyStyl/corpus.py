@@ -5,7 +5,7 @@ import codecs
 import glob
 from operator import itemgetter
 
-from nltk.tokenize import RegexpTokenizer
+from nltk.tokenize import WhitespaceTokenizer
 
 def untokenize(words):
     return ' '.join(words)
@@ -17,6 +17,7 @@ class Corpus:
         self.titles = titles
         self.target_ints = target_ints # integers corresponding to category names
         self.target_idx = target_idx # actual category names as strings
+        self.tokenizer = None
 
     def add_texts_from_directory(self, directory, encoding='utf-8', ext='.txt'):
         """
@@ -69,8 +70,15 @@ class Corpus:
 
         _, self.texts, self.titles, self.target_ints = zip(*zipped)
 
+    def set_tokenizer(self, option=None):
+        if option == None or option == 'whitespace':
+            self.tokenizer = WhitespaceTokenizer()
+        elif option == 'words':
+            self.tokenizer = RegexpTokenizer(r'\w+')
+        else:
+            raise ValueError('Invalid tokenization option: %s' %(option))
 
-    def segment(self, segment_size=0, step_size=0, min_size=0, max_size=0):
+    def segment(self, segment_size=0, step_size=0, min_size=0, max_size=0, tokenizer=None):
         """
         Important: the tokenizer will have a great influence on the segmentation procedure!
         """
@@ -84,11 +92,11 @@ class Corpus:
         if not self.texts:
             raise ValueError('No texts loaded yet.')
 
-        tokenizer = RegexpTokenizer(r'\w+')
+        self.set_tokenizer(option=tokenizer)
 
         tokenized_texts = []
         for i, text in enumerate(self.texts):
-            tokens = tokenizer.tokenize(text)
+            tokens = self.tokenizer.tokenize(text)
             if max_size:
                 tokens = tokens[:max_size] # cut
             if min_size and len(tokens) < min_size:
