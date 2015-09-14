@@ -6,8 +6,6 @@ import glob
 
 from nltk.tokenize import RegexpTokenizer
 
-import utils
-
 def untokenize(words):
     return ' '.join(words)
 

@@ -18,9 +18,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 if sys.version_info[0] == 2:
-    from ete2 import Tree, NodeStyle, TreeStyle
+    from ete2 import Tree, faces, AttrFace, TreeStyle, NodeStyle, TextFace, Face
 elif sys.version_info[0] == 3:
-    from ete3 import Tree, NodeStyle, TreeStyle
+    from ete2 import Tree, faces, AttrFace, TreeStyle, NodeStyle, TextFace, Face
 
 from PyStyl.visualization import color_plt_labels
 
@@ -97,7 +97,7 @@ class Dendrogram(list):
         return Z[:,1:]
 
     def draw_scipy_tree(self, labels=None, title=None, fontsize=5,
-                        sample_categories=None, outputfile=std_output_path+'tree.pdf'):
+                        sample_categories=None, outputfile=std_output_path+'scipy_tree.pdf'):
         """
         Draw the dendrogram using plain pylab/scipy/matplotlib.
         """
@@ -134,7 +134,8 @@ class Dendrogram(list):
         sns.plt.subplots_adjust(bottom=0.15)
         fig.savefig(outputfile)
 
-    def ete_tree(self, labels=None):
+    def draw_ete_tree(self, labels=None, title=None, fontsize=5, save_newick=True, mode='c',
+                      sample_categories=None, outputfile=std_output_path+'ete_tree.pdf'):
         T = to_tree(self.to_linkage_matrix())
         root = Tree()
         root.dist = 0
@@ -156,13 +157,37 @@ class Dendrogram(list):
             for leaf in root.get_leaves():
                 leaf.name = str(labels[int(leaf.name)])
 
+
+        def layout(node):
+            if node.is_leaf():
+                N = AttrFace("name", fsize=7)
+                faces.add_face_to_node(faces.AttrFace("name","Arial",10, None), node, 0, position='branch-right')
+                # problems: aligment of labels to branch, left padding of labels
+
         ts = TreeStyle()
-        ts.show_leaf_name = True
+        ts.mode = mode
+        ts.show_leaf_name = False
+        ts.scale = 120
+        ts.show_scale = False
+        ts.branch_vertical_margin = 10
+
         nstyle = NodeStyle()
-        nstyle["shape"] = None
+        nstyle["fgcolor"] = "#0f0f0f"
         nstyle["size"] = 0
-        nstyle["hz_line_type"] = 1
-        nstyle["hz_line_color"] = "#cccccc"
+        nstyle["vt_line_color"] = "#0f0f0f"
+        nstyle["hz_line_color"] = "#0f0f0f"
+        nstyle["vt_line_width"] = 1
+        nstyle["hz_line_width"] = 1
+        nstyle["vt_line_type"] = 0
+        nstyle["hz_line_type"] = 0
+
         for n in root.traverse():
            n.set_style(nstyle)
+
+        ts.layout_fn = layout
+
+        if save_newick: # save tree in newick format for later manipulation in e.g. FigTree:
+            root.write(outfile=os.path.splitext(outputfile)[0]+'.newick')
+
+        root.render(outputfile, tree_style=ts)
         return root

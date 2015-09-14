@@ -124,12 +124,13 @@ def clustermap(X, sample_names, sample_categories=None,
     cm.savefig(outputfile)
     plt.clf()
 
-def dendrogram(cluster_tree, sample_names, sample_categories,
-               outputfile=std_output_path+'dendrogram.pdf', fontsize=5, save_newick=True):
-    #dendrogram = cluster_tree.dendrogram.ete_tree(sample_names)
-    #if save_newick:
-    #    # save tree in newick format for later manipulation in e.g. FigTree:
-    #    dendrogram.write(outfile=outputfile+'natural_clustering.newick')
+def scipy_dendrogram(cluster_tree, sample_names, sample_categories,
+               outputfile=std_output_path+'scipy_dendrogram.pdf', fontsize=5):
     cluster_tree.dendrogram.draw_scipy_tree(labels=sample_names, sample_categories=sample_categories)
+
+def ete_dendrogram(cluster_tree, sample_names, sample_categories,
+                   outputfile=std_output_path+'ete_dendrogram.pdf', fontsize=5, save_newick=True):
+    dendrogram = cluster_tree.dendrogram.draw_ete_tree(sample_names)
+    
 
 
