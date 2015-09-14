@@ -1,14 +1,17 @@
 from __future__ import print_function
 
+import os
+
 from sklearn.cluster import AgglomerativeClustering
 import matplotlib.pyplot as plt
 import seaborn as sns
 from mpl_toolkits.mplot3d import Axes3D
 import pandas as pd
 
+std_output_path = os.path.dirname(os.path.abspath(__file__))+'/../output/'
 
 def scatterplot_2d(X, sample_names, feature_names, sample_categories,
-                   outputfile='../output/2d.pdf', nb_clusters=0, loadings=None): 
+                   outputfile=std_output_path+'2d.pdf', nb_clusters=0, loadings=None): 
     sns.set_style('dark')
     sns.plt.rcParams['axes.linewidth'] = 0.4
     fig, ax1 = sns.plt.subplots()  
@@ -61,7 +64,7 @@ def scatterplot_2d(X, sample_names, feature_names, sample_categories,
 
 
 def scatterplot_3d(X, sample_names, sample_categories,
-                   outputfile='../output/3d.pdf', nb_clusters=0, loadings=None):
+                   outputfile=std_output_path+'3d.pdf', nb_clusters=0, loadings=None):
     
     sns.set_style('white')
     fig = plt.figure()
@@ -89,7 +92,26 @@ def scatterplot_3d(X, sample_names, sample_categories,
     plt.savefig(outputfile, bbox_inches=0)
     plt.clf()
 
-def clustermap(X, sample_names, sample_categories=None, outputfile='../output/clustermap.pdf', fontsize=5):
+def color_plt_labels(ax, target_ints=None, fontsize=5):
+    # xlabels:
+    for idx, label in enumerate(ax.get_xticklabels()):
+        label.set_rotation('vertical')
+        label.set_fontname('Arial')
+        label.set_fontsize(fontsize)
+        if target_ints:
+            label.set_color(plt.cm.spectral(target_ints[idx] / 10.))
+
+    # ylabels:
+    for idx, label in enumerate(ax.get_yticklabels()):
+        label.set_rotation('horizontal')
+        label.set_fontname('Arial')
+        label.set_fontsize(fontsize)
+        if target_ints:
+            label.set_color(plt.cm.spectral(target_ints[-idx-1] / 10.)) # watch out: different indexing both axis
+
+
+def clustermap(X, sample_names, sample_categories=None,
+               outputfile=std_output_path+'clustermap.pdf', fontsize=5):
     # convert to pandas dataframe:
     df = pd.DataFrame(data=X, columns=(sample_names))
     df = df.applymap(lambda x:int(x*1000)).corr()
@@ -97,23 +119,17 @@ def clustermap(X, sample_names, sample_categories=None, outputfile='../output/cl
     # clustermap plotting:
     cm = sns.clustermap(df)
     ax = cm.ax_heatmap
-
-    # xlabels:
-    for idx, label in enumerate(ax.get_xticklabels()):
-        label.set_rotation('vertical')
-        label.set_fontname('Arial')
-        label.set_fontsize(fontsize)
-        if sample_categories:
-            label.set_color(plt.cm.spectral(sample_categories[0][idx] / 10.))
-
-    # ylabels:
-    for idx, label in enumerate(ax.get_yticklabels()):
-        label.set_rotation('horizontal')
-        label.set_fontname('Arial')
-        label.set_fontsize(fontsize)
-        if sample_categories:
-            label.set_color(plt.cm.spectral(sample_categories[0][-idx-1] / 10.)) # watch out: different indexing both axis
+    color_plt_labels(ax, sample_categories[0], fontsize=fontsize)
 
     cm.savefig(outputfile)
     plt.clf()
+
+def dendrogram(cluster_tree, sample_names, sample_categories,
+               outputfile=std_output_path+'dendrogram.pdf', fontsize=5, save_newick=True):
+    #dendrogram = cluster_tree.dendrogram.ete_tree(sample_names)
+    #if save_newick:
+    #    # save tree in newick format for later manipulation in e.g. FigTree:
+    #    dendrogram.write(outfile=outputfile+'natural_clustering.newick')
+    cluster_tree.dendrogram.draw_scipy_tree(labels=sample_names, sample_categories=sample_categories)
+
 

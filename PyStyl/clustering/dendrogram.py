@@ -7,21 +7,40 @@
 
 import copy
 import sys
-import numpy as np
-
-import numpy
-
+import os
 from operator import itemgetter
 
+import numpy as np
+from scipy.cluster.hierarchy import dendrogram as scipy_dendrogram
+from scipy.cluster.hierarchy import to_tree
+import pylab
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+if sys.version_info[0] == 2:
+    from ete2 import Tree, NodeStyle, TreeStyle
+elif sys.version_info[0] == 3:
+    from ete3 import Tree, NodeStyle, TreeStyle
+
+from PyStyl.visualization import color_plt_labels
+
+
+std_output_path = os.path.dirname(os.path.abspath(__file__))+'/../../output/'
+
 class DendrogramNode(object):
-    """Represents a node in a dendrogram."""
+    """
+    Represents a node in a dendrogram.
+    """
+    
     def __init__(self, id, *children):
         self.id = id
         self.distance = 0.0
         self._children = children
 
     def leaves(self):
-        """Return the leaves of all children of a given node."""
+        """
+        Return the leaves of all children of a given node.
+        """
         if self._children:
             leaves = []
             for child in self._children:
@@ -74,42 +93,29 @@ class Dendrogram(list):
     def to_linkage_matrix(self):
         Z = self[0].adjacency_list()
         Z.sort()
-        Z = numpy.array(Z)
+        Z = np.array(Z)
         return Z[:,1:]
 
-    def draw(self, show=True, save=False, format="pdf", labels=None, title=None, fontsize=None):
-        """Draw the dendrogram using pylab and matplotlib."""
-        try:
-            from scipy.cluster.hierarchy import dendrogram as scipy_dendrogram
-        except ImportError:
-            raise ImportError("Scipy not installed, can't draw dendrogram")
-        try:
-            import pylab
-        except ImportError:
-            raise ImportError("Pylab not installed, can't draw dendrogram")
-        try:
-            import matplotlib.pyplot as plt
-        except ImportError:
-            raise ImportError("Matplotlib not installed, can't draw dendrogram")
-
-        fig = plt.figure()
+    def draw_scipy_tree(self, labels=None, title=None, fontsize=5,
+                        sample_categories=None, outputfile=std_output_path+'tree.pdf'):
+        """
+        Draw the dendrogram using plain pylab/scipy/matplotlib.
+        """
+        fig = sns.plt.figure()
         ax = fig.add_subplot(111, axisbg='white')
-
         plt.rcParams['font.family'] = 'arial'
         plt.rcParams['font.size'] = 6
         plt.rcParams['lines.linewidth'] = 0.75
-
         m = self.to_linkage_matrix()
-
         d = scipy_dendrogram(m, labels=labels,
                              leaf_font_size=fontsize,
                              color_threshold=0.7*max(m[:,2]),
                              leaf_rotation=180)
-
-        ax = plt.gca()
-        ax_labels = ax.get_xmajorticklabels()+ax.get_ymajorticklabels()
-        for i in range(len(ax_labels)):
-            ax_labels[i].set_family('arial')
+        ax = sns.plt.gca()
+        if sample_categories:
+            color_plt_labels(ax, sample_categories[0])
+        else:
+            color_plt_labels(ax)
 
         ax.get_yaxis().set_ticks([])
         ax.spines['right'].set_visible(False)
@@ -117,34 +123,18 @@ class Dendrogram(list):
         ax.spines['bottom'].set_visible(False)
         ax.spines['left'].set_visible(False)
         ax.xaxis.set_ticks_position('bottom')
-        plt.xticks(rotation=90)
-
-        plt.tick_params(axis='x', which='both', bottom='off', top='off')
-        plt.tick_params(axis='y', which='both', bottom='off', top='off')
+        sns.plt.xticks(rotation=90)
+        sns.plt.tick_params(axis='x', which='both', bottom='off', top='off')
+        sns.plt.tick_params(axis='y', which='both', bottom='off', top='off')
         ax.xaxis.grid(False)
         ax.yaxis.grid(False)
-
-        plt.rcParams["figure.facecolor"] = "white"
-        plt.rcParams["axes.facecolor"] = "white"
-        plt.rcParams["savefig.facecolor"] = "white"
-
-        if title is not None:
-            fig.suptitle(title, fontsize=12)
-        if show:
-            fig.show()
-        if save:
-            fig.savefig('dendrogram.%s' % (format,))
+        sns.plt.rcParams["figure.facecolor"] = "white"
+        sns.plt.rcParams["axes.facecolor"] = "white"
+        sns.plt.rcParams["savefig.facecolor"] = "white"
+        sns.plt.subplots_adjust(bottom=0.15)
+        fig.savefig(outputfile)
 
     def ete_tree(self, labels=None):
-        if sys.version_info[0] == 2:
-            from ete2 import Tree, NodeStyle, TreeStyle
-        elif sys.version_info[0] == 3:
-            from ete3 import Tree, NodeStyle, TreeStyle
-        else:
-            raise ValueError('Your version of Python is not supported.')
-
-        from scipy.cluster.hierarchy import to_tree
-
         T = to_tree(self.to_linkage_matrix())
         root = Tree()
         root.dist = 0
@@ -168,18 +158,11 @@ class Dendrogram(list):
 
         ts = TreeStyle()
         ts.show_leaf_name = True
-
-        # Draws nodes as small red spheres of diameter equal to 10 pixels
         nstyle = NodeStyle()
         nstyle["shape"] = None
         nstyle["size"] = 0
-
-        # Gray dashed branch lines
         nstyle["hz_line_type"] = 1
         nstyle["hz_line_color"] = "#cccccc"
-
-        # Applies the same static style to all nodes in the tree. Note that,
-        # if "nstyle" is modified, changes will affect to all nodes
         for n in root.traverse():
            n.set_style(nstyle)
         return root

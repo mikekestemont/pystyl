@@ -22,8 +22,7 @@ params:
 from PyStyl.corpus import Corpus
 from PyStyl.vectorization import Vectorizer
 from PyStyl.analysis import pca, tsne, distance_matrix, hierarchical_clustering
-from PyStyl.visualization import scatterplot_2d, scatterplot_3d, clustermap
-from PyStyl.clustering import VNClusterer, Clusterer
+from PyStyl.visualization import scatterplot_2d, scatterplot_3d, clustermap, dendrogram
 
 c = Corpus()
 #c.add_texts_from_directory(directory='../data/dummy1')
@@ -56,8 +55,8 @@ scatterplot_3d(reduced_X, sample_names=c.titles, nb_clusters=4, sample_categorie
 
 dm = distance_matrix(X, 'minmax')
 clustermap(dm, sample_names=c.titles, sample_categories=(c.target_ints, c.target_idx), fontsize=8)
-tree = hierarchical_clustering(dm)
-
+cluster_tree = hierarchical_clustering(dm, linkage='ward')
+dendrogram(cluster_tree, sample_names=c.titles, sample_categories=(c.target_ints, c.target_idx), fontsize=8)
 
 
 #for feature in feature_type:
