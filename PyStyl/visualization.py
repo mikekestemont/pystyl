@@ -4,6 +4,7 @@ from sklearn.cluster import AgglomerativeClustering
 import matplotlib.pyplot as plt
 import seaborn as sns
 from mpl_toolkits.mplot3d import Axes3D
+import pandas as pd
 
 
 def scatterplot_2d(X, sample_names, feature_names, sample_categories,
@@ -18,7 +19,7 @@ def scatterplot_2d(X, sample_names, feature_names, sample_categories,
     if nb_clusters:
         # clustering on top (for colouring):
         clustering = AgglomerativeClustering(linkage='ward', affinity='euclidean', n_clusters=nb_clusters)
-        clustering.fit(pca_matrix)
+        clustering.fit(X)
         # add slice names:
         for x, y, name, cluster_label in zip(x1, x2, sample_names, clustering.labels_):
             ax1.text(x, y, name, ha='center', va="center",
@@ -86,5 +87,33 @@ def scatterplot_3d(X, sample_names, sample_categories,
                      fontdict={'family': 'Arial', 'size': 10})
 
     plt.savefig(outputfile, bbox_inches=0)
+    plt.clf()
+
+def clustermap(X, sample_names, sample_categories=None, outputfile='../output/clustermap.pdf', fontsize=5):
+    # convert to pandas dataframe:
+    df = pd.DataFrame(data=X, columns=(sample_names))
+    df = df.applymap(lambda x:int(x*1000)).corr()
+
+    # clustermap plotting:
+    cm = sns.clustermap(df)
+    ax = cm.ax_heatmap
+
+    # xlabels:
+    for idx, label in enumerate(ax.get_xticklabels()):
+        label.set_rotation('vertical')
+        label.set_fontname('Arial')
+        label.set_fontsize(fontsize)
+        if sample_categories:
+            label.set_color(plt.cm.spectral(sample_categories[0][idx] / 10.))
+
+    # ylabels:
+    for idx, label in enumerate(ax.get_yticklabels()):
+        label.set_rotation('horizontal')
+        label.set_fontname('Arial')
+        label.set_fontsize(fontsize)
+        if sample_categories:
+            label.set_color(plt.cm.spectral(sample_categories[0][-idx-1] / 10.)) # watch out: different indexing both axis
+
+    cm.savefig(outputfile)
     plt.clf()
 
