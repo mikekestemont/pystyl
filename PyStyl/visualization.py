@@ -7,6 +7,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from mpl_toolkits.mplot3d import Axes3D
 import pandas as pd
+from bokeh.models import HoverTool, ColumnDataSource, Axis
+from bokeh.plotting import figure, show, output_file, save
+
 
 std_output_path = os.path.dirname(os.path.abspath(__file__))+'/../output/'
 
@@ -61,6 +64,46 @@ def scatterplot_2d(X, sample_names, feature_names, sample_categories,
     sns.plt.savefig(outputfile, bbox_inches=0)
     plt.clf()
     return
+
+def scatterplot_2d_bokeh(X, sample_names, sample_categories,
+                   outputfile=std_output_path+'2d_bokeh.html', nb_clusters=0): 
+    if X.shape[1] != 2:
+        raise ValueError('Only two-dimensional matrices are supported')
+
+    output_file(outputfile)
+    TOOLS="pan,wheel_zoom,reset,hover,box_select,save"
+    p = figure(tools=TOOLS,
+               plot_width=800, title_text_font="Arial", 
+               plot_height=600, outline_line_color="white")
+
+    if nb_clusters:
+        cl = AgglomerativeClustering(linkage='ward', affinity='euclidean', n_clusters=nb_clusters)
+        clusters = cl.fit_predict(X)
+        # get color palette:
+        colors = sns.color_palette('husl', n_colors=nb_clusters)
+        colors = [tuple([c * 256 for c in color]) for color in colors]
+        colors = ['#%02x%02x%02x' % colors[i] for i in clusters]
+    else:
+        colors = sns.color_palette('husl', n_colors=len(sample_categories[1]))
+        colors = [tuple([c * 256 for c in color]) for color in colors]
+        colors = ['#%02x%02x%02x' % colors[i] for i in clusters]
+
+    source = ColumnDataSource(data=dict(x=X[:,0], y=X[:,1], name=sample_names))
+
+    p.circle(x=X[:,0], y=X[:,1],
+             source=source, size=8, color=colors,
+             fill_alpha=0.9, line_color=None)
+
+    hover = p.select(dict(type=HoverTool))
+    hover.tooltips = [("name", "@name")]
+    p.xgrid.grid_line_color = None
+    p.ygrid.grid_line_color = None
+    p.axis.axis_line_color = None
+    p.axis.major_label_text_font_size = '0pt'
+    p.axis.major_tick_line_color = None
+    p.axis[0].ticker.num_minor_ticks = 0
+    p.axis[1].ticker.num_minor_ticks = 0
+    save(p)
 
 
 def scatterplot_3d(X, sample_names, sample_categories,
