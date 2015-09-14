@@ -43,3 +43,8 @@ def hierarchical_clustering(distance_matrix, linkage):
     cluster_tree.cluster(verbose=0)
     return cluster_tree
 
+def vnc_clustering(distance_matrix, linkage):
+    cluster_tree = VNClusterer(distance_matrix, linkage=linkage)
+    cluster_tree.cluster(verbose=0)
+    return cluster_tree
+

@@ -13,7 +13,7 @@ from bokeh.plotting import figure, show, output_file, save
 
 std_output_path = os.path.dirname(os.path.abspath(__file__))+'/../output/'
 
-def scatterplot_2d(X, sample_names, feature_names, sample_categories,
+def scatterplot_2d(X, sample_names, feature_names, target_ints=None, target_idx=None,
                    outputfile=std_output_path+'2d.pdf', nb_clusters=0, loadings=None): 
     sns.set_style('dark')
     sns.plt.rcParams['axes.linewidth'] = 0.4
@@ -32,7 +32,7 @@ def scatterplot_2d(X, sample_names, feature_names, sample_categories,
                      color=plt.cm.spectral(cluster_label / 10.),
                      fontdict={'family': 'Arial', 'size': 10})
     else:
-        for x, y, name, cluster_label in zip(x1, x2, sample_names, sample_categories[0]):
+        for x, y, name, cluster_label in zip(x1, x2, sample_names, target_ints):
             ax1.text(x, y, name, ha='center', va="center",
                      color=plt.cm.spectral(cluster_label / 10.),
                      fontdict={'family': 'Arial', 'size': 10})
@@ -65,7 +65,7 @@ def scatterplot_2d(X, sample_names, feature_names, sample_categories,
     plt.clf()
     return
 
-def scatterplot_2d_bokeh(X, sample_names, sample_categories,
+def scatterplot_2d_bokeh(X, sample_names, target_ints=None, target_idx=None,
                    outputfile=std_output_path+'2d_bokeh.html', nb_clusters=0): 
     if X.shape[1] != 2:
         raise ValueError('Only two-dimensional matrices are supported')
@@ -84,7 +84,7 @@ def scatterplot_2d_bokeh(X, sample_names, sample_categories,
         colors = [tuple([c * 256 for c in color]) for color in colors]
         colors = ['#%02x%02x%02x' % colors[i] for i in clusters]
     else:
-        colors = sns.color_palette('husl', n_colors=len(sample_categories[1]))
+        colors = sns.color_palette('husl', n_colors=len(target_idx))
         colors = [tuple([c * 256 for c in color]) for color in colors]
         colors = ['#%02x%02x%02x' % colors[i] for i in clusters]
 
@@ -106,8 +106,8 @@ def scatterplot_2d_bokeh(X, sample_names, sample_categories,
     save(p)
 
 
-def scatterplot_3d(X, sample_names, sample_categories,
-                   outputfile=std_output_path+'3d.pdf', nb_clusters=0, loadings=None):
+def scatterplot_3d(X, sample_names, target_ints=None, target_idx=None, loadings=None,
+                   outputfile=std_output_path+'3d.pdf', nb_clusters=0):
     
     sns.set_style('white')
     fig = plt.figure()
@@ -127,7 +127,7 @@ def scatterplot_3d(X, sample_names, sample_categories,
     else:
         for x, y, z in zip(x1, x2, x3):
             ax.scatter(x, y, z, edgecolors='none', facecolors='none')
-        for x, y, z, name, cluster_label in zip(x1, x2, x3, sample_names, sample_categories[0]):
+        for x, y, z, name, cluster_label in zip(x1, x2, x3, sample_names, target_ints):
             ax.text(x, y, z, name, ha='center', va="center",
                      color=plt.cm.spectral(cluster_label / 10.),
                      fontdict={'family': 'Arial', 'size': 10})
@@ -153,7 +153,7 @@ def color_plt_labels(ax, target_ints=None, fontsize=5):
             label.set_color(plt.cm.spectral(target_ints[-idx-1] / 10.)) # watch out: different indexing both axis
 
 
-def clustermap(X, sample_names, sample_categories=None,
+def clustermap(X, sample_names, target_ints=None, target_idx=None,
                outputfile=std_output_path+'clustermap.pdf', fontsize=5):
     # convert to pandas dataframe:
     df = pd.DataFrame(data=X, columns=(sample_names))
@@ -162,18 +162,23 @@ def clustermap(X, sample_names, sample_categories=None,
     # clustermap plotting:
     cm = sns.clustermap(df)
     ax = cm.ax_heatmap
-    color_plt_labels(ax, sample_categories[0], fontsize=fontsize)
+    color_plt_labels(ax, target_ints, fontsize=fontsize)
 
     cm.savefig(outputfile)
     plt.clf()
 
-def scipy_dendrogram(cluster_tree, sample_names, sample_categories,
+def scipy_dendrogram(cluster_tree, sample_names, target_ints=None, target_idx=None,
                outputfile=std_output_path+'scipy_dendrogram.pdf', fontsize=5):
-    cluster_tree.dendrogram.draw_scipy_tree(labels=sample_names, sample_categories=sample_categories)
+    cluster_tree.dendrogram.draw_scipy_tree(labels=sample_names,
+                                            target_ints=target_ints,
+                                            target_idx=target_idx)
 
-def ete_dendrogram(cluster_tree, sample_names, sample_categories,
-                   outputfile=std_output_path+'ete_dendrogram.pdf', fontsize=5, save_newick=True):
-    dendrogram = cluster_tree.dendrogram.draw_ete_tree(sample_names)
+def ete_dendrogram(cluster_tree, sample_names, target_ints=None, target_idx=None,
+                   outputfile=std_output_path+'ete_dendrogram.pdf',
+                   fontsize=5, save_newick=True):
+    dendrogram = cluster_tree.dendrogram.draw_ete_tree(labels=sample_names,
+                                                       target_ints=target_ints,
+                                                       target_idx=target_idx)
     
 
 

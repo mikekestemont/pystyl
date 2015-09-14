@@ -20,7 +20,7 @@ import seaborn as sns
 if sys.version_info[0] == 2:
     from ete2 import Tree, faces, AttrFace, TreeStyle, NodeStyle, TextFace, Face
 elif sys.version_info[0] == 3:
-    from ete2 import Tree, faces, AttrFace, TreeStyle, NodeStyle, TextFace, Face
+    from ete3 import Tree, faces, AttrFace, TreeStyle, NodeStyle, TextFace, Face
 
 from PyStyl.visualization import color_plt_labels
 
@@ -97,7 +97,8 @@ class Dendrogram(list):
         return Z[:,1:]
 
     def draw_scipy_tree(self, labels=None, title=None, fontsize=5,
-                        sample_categories=None, outputfile=std_output_path+'scipy_tree.pdf'):
+                        target_ints=None, target_idx=None,
+                        outputfile=std_output_path+'scipy_tree.pdf'):
         """
         Draw the dendrogram using plain pylab/scipy/matplotlib.
         """
@@ -112,8 +113,8 @@ class Dendrogram(list):
                              color_threshold=0.7*max(m[:,2]),
                              leaf_rotation=180)
         ax = sns.plt.gca()
-        if sample_categories:
-            color_plt_labels(ax, sample_categories[0])
+        if target_ints:
+            color_plt_labels(ax, target_ints)
         else:
             color_plt_labels(ax)
 
@@ -134,8 +135,10 @@ class Dendrogram(list):
         sns.plt.subplots_adjust(bottom=0.15)
         fig.savefig(outputfile)
 
-    def draw_ete_tree(self, labels=None, title=None, fontsize=5, save_newick=True, mode='c',
-                      sample_categories=None, outputfile=std_output_path+'ete_tree.pdf'):
+    def draw_ete_tree(self, labels=None, title=None, fontsize=5,
+                      save_newick=True, mode='c',
+                      target_ints=None, target_idx=None,
+                      outputfile=std_output_path+'ete_tree.pdf'):
         T = to_tree(self.to_linkage_matrix())
         root = Tree()
         root.dist = 0

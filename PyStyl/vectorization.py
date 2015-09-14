@@ -1,5 +1,12 @@
 from __future__ import print_function
 
+import os
+import sys
+if sys.version_info[0] == 2:
+    import cPickle as pickle
+elif sys.version_info[0] == 3:
+    import pickle
+
 from sklearn.base import BaseEstimator
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
@@ -7,6 +14,7 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import scipy.sparse as sp
 import numpy as np
 
+std_output_path = os.path.dirname(os.path.abspath(__file__))+'/../output/'
 
 class StdDevScaler(BaseEstimator):
 
@@ -26,7 +34,7 @@ class StdDevScaler(BaseEstimator):
         return self.transform(X)
 
 
-class Vectorizer():
+class Vectorizer:
 
     def __init__(self, mfi=100, ngram_type='word',
                  ngram_size=1, vocabulary=None,
@@ -76,20 +84,29 @@ class Vectorizer():
             v = CountVectorizer(**self.params)
             self.transformer = Pipeline([('s1', v)])
 
+    def save(self, outfilename=std_output_path+'vectorizer.p'):
+        pickle.dump(self, open(outfilename, 'wb'))
+
+    @staticmethod
+    def load(infilename=std_output_path+'vectorizer.p'):
+        return pickle.load(open(infilename, 'rb'))
 
     def fit_transform(self, texts):
         print('Fitting vectorizer')
-        X = self.transformer.fit_transform(texts)
+        self.X = self.transformer.fit_transform(texts)
         # extract names for later convenience:
         self.features = self.transformer.named_steps['s1'].get_feature_names()
-        return X
+        return self.X
 
     def remove_pronouns(self, X, language):
         if language not in ('en'):
             raise ValueError('No pronouns available for: %s' %(language))
-
-        pronouns = {w.strip() for w in open('pronouns/'+language+'.txt') if not w.startswith('#')}
+        pronoun_path = os.path.dirname(os.path.abspath(__file__))+'/pronouns/'
+        pronouns = {w.strip() for w in open(pronoun_path+language+'.txt') if not w.startswith('#')}
         rm_idxs = [self.features.index(p) for p in pronouns if p in self.features]
         keep_idxs = [i for i in range(len(self.features)) if i not in rm_idxs]
         self.features = [f for f in self.features if f not in pronouns]
-        return X[:, keep_idxs]
+        self.X = X[:, keep_idxs]
+        return self.X
+
+

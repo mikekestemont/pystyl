@@ -4,11 +4,33 @@ import os
 import codecs
 import glob
 from operator import itemgetter
+import sys
+if sys.version_info[0] == 2:
+    import cPickle as pickle
+elif sys.version_info[0] == 3:
+    import pickle
 
-from nltk.tokenize import WhitespaceTokenizer
+from nltk.tokenize import WhitespaceTokenizer, RegexpTokenizer
+
+std_output_path = os.path.dirname(os.path.abspath(__file__))+'/../output/'
 
 def untokenize(words):
     return ' '.join(words)
+
+def get_tokenizer(option=None):
+    """
+    Notes:
+    * the tokenizer is a property of the corpus, instead of the vectorizer
+      in PyStyl, because the tokenizer is crucial to the segmentation.
+    * right now, the tokenizers aren't a property of the Corpus objects,
+      because they cannot pickled.
+    """
+    if option == None or option == 'whitespace':
+        return WhitespaceTokenizer()
+    elif option == 'words':
+        return RegexpTokenizer(r'\w+')
+    else:
+        raise ValueError('Invalid tokenization option: %s' %(option))
 
 class Corpus:
 
@@ -17,7 +39,14 @@ class Corpus:
         self.titles = titles
         self.target_ints = target_ints # integers corresponding to category names
         self.target_idx = target_idx # actual category names as strings
-        self.tokenizer = None
+        self.tokenizer_option = None
+
+    def save(self, outfilename=std_output_path+'corpus.p'):
+        pickle.dump(self, open(outfilename, 'wb'))
+
+    @staticmethod
+    def load(infilename=std_output_path+'corpus.p'):
+        return pickle.load(open(infilename, 'rb'))
 
     def add_texts_from_directory(self, directory, encoding='utf-8', ext='.txt'):
         """
@@ -70,15 +99,7 @@ class Corpus:
 
         _, self.texts, self.titles, self.target_ints = zip(*zipped)
 
-    def set_tokenizer(self, option=None):
-        if option == None or option == 'whitespace':
-            self.tokenizer = WhitespaceTokenizer()
-        elif option == 'words':
-            self.tokenizer = RegexpTokenizer(r'\w+')
-        else:
-            raise ValueError('Invalid tokenization option: %s' %(option))
-
-    def segment(self, segment_size=0, step_size=0, min_size=0, max_size=0, tokenizer=None):
+    def segment(self, segment_size=0, step_size=0, min_size=0, max_size=0, tokenizer_option=None):
         """
         Important: the tokenizer will have a great influence on the segmentation procedure!
         """
@@ -92,11 +113,13 @@ class Corpus:
         if not self.texts:
             raise ValueError('No texts loaded yet.')
 
-        self.set_tokenizer(option=tokenizer)
+        if tokenizer_option:
+            self.tokenizer_option = tokenizer_option
+        tokenizer = get_tokenizer(option=self.tokenizer_option)
 
         tokenized_texts = []
         for i, text in enumerate(self.texts):
-            tokens = self.tokenizer.tokenize(text)
+            tokens = tokenizer.tokenize(text)
             if max_size:
                 tokens = tokens[:max_size] # cut
             if min_size and len(tokens) < min_size:
