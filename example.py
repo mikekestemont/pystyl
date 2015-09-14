@@ -19,21 +19,22 @@ params:
 
 
 #from experiment import Experiment
-from corpus import Corpus
-from vectorization import Vectorizer
-from analysis import pca, tsne, distance_matrix
-from visualization import scatterplot_2d, scatterplot_3d, clustermap
+from PyStyl.corpus import Corpus
+from PyStyl.vectorization import Vectorizer
+from PyStyl.analysis import pca, tsne, distance_matrix, hierarchical_clustering
+from PyStyl.visualization import scatterplot_2d, scatterplot_3d, clustermap
+from PyStyl.clustering import VNClusterer, Clusterer
 
 c = Corpus()
 #c.add_texts_from_directory(directory='../data/dummy1')
-c.add_texts_from_directory(directory='../data/dummy2')
-c.segment(segment_size=10000, step_size=None, min_size=1000, max_size=20000)
-v = Vectorizer(mfi=5000, ngram_type='word',
+c.add_texts_from_directory(directory='data/dummy2')
+c.segment(segment_size=10000, min_size=1000, max_size=20000)
+v = Vectorizer(mfi=500, ngram_type='word',
                ngram_size=1, vector_space='tf',
                lowercase=True, vocabulary=None)
 
 X = v.fit_transform(c.texts)
-X = v.remove_pronouns(X, language='en')
+X = v.remove_pronouns(X, language='en') # refit?
 
 """
 # pca in 2d:
@@ -55,6 +56,7 @@ scatterplot_3d(reduced_X, sample_names=c.titles, nb_clusters=4, sample_categorie
 
 dm = distance_matrix(X, 'minmax')
 clustermap(dm, sample_names=c.titles, sample_categories=(c.target_ints, c.target_idx), fontsize=8)
+tree = hierarchical_clustering(dm)
 
 
 
