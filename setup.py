@@ -1,5 +1,14 @@
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
+import sys
 
+if sys.version_info[0] == 2:
+    ete_requirement = 'ete2'
+elif sys.version_info[0] == 3:
+    ete_requirement = 'ete3'
+    
 setup(
     name='PyStyl',
     version='0.0.1',
@@ -15,9 +24,8 @@ setup(
         'scikit-learn',
         'seaborn',
         'nltk',
-        'pylab',
         'matplotlib',
-        'ete2', # or ete3
+        ete_requirement,
         'flask',
         'scipy',
         'pandas',
