@@ -3,6 +3,7 @@ from __future__ import print_function
 import os
 import codecs
 import glob
+from operator import itemgetter
 
 from nltk.tokenize import RegexpTokenizer
 
@@ -32,7 +33,7 @@ class Corpus:
             self.target_idx = []
             self.texts, self.titles, self.target_ints = [], [], []
 
-        for filename in glob.glob(directory+'/*'+ext):
+        for filename in sorted(glob.glob(directory+'/*'+ext)):
             if filename.startswith("."):
                 continue
 
@@ -55,6 +56,19 @@ class Corpus:
 
                 else:
                     print("Ignored: "+filename+" (does not contain any text...)")
+
+    def temporal_sort(self):
+        # check whether the categories are properly formatted:
+        for cat in self.target_idx: # no generator here, to allow detailed error message
+            if not cat.isdigit():
+                raise ValueError('Category label is not a number: %s' %(cat))
+
+        zipped = [(int(self.target_idx[target_int]), text, title, target_int) \
+                       for text, title, target_int in zip(self.texts, self.titles, self.target_ints)]
+        zipped.sort(key=itemgetter(0), reverse=False)
+
+        _, self.texts, self.titles, self.target_ints = zip(*zipped)
+
 
     def segment(self, segment_size=0, step_size=0, min_size=0, max_size=0):
         """
