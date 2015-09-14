@@ -11,10 +11,10 @@ if not os.path.isdir('../output/'):
     os.mkdir('../output/')
 
 c = Corpus()
-#c.add_texts_from_directory(directory='data/dummy1')
-c.add_texts_from_directory(directory='data/sorted')
-c.temporal_sort() # we assume that the categpries are sortable integers, indicating some order (e.g. date of composition)
-c.segment(segment_size=3000, min_size=1000, max_size=20000)
+c.add_texts_from_directory(directory='data/dummy')
+#c.add_texts_from_directory(directory='data/sorted')
+#c.temporal_sort() # we assume that the categpries are sortable integers, indicating some order (e.g. date of composition)
+c.segment(segment_size=5000, min_size=1000, max_size=20000)
 
 c.save()
 c = Corpus.load()
@@ -33,31 +33,38 @@ v = Vectorizer.load()
 reduced_X, loadings = pca(X, nb_dimensions=2)
 
 # pca in 2d:
-scatterplot_2d_bokeh(reduced_X, sample_names=c.titles, nb_clusters=4, sample_categories=(c.target_ints, c.target_idx))
+scatterplot_2d_bokeh(reduced_X, sample_names=c.titles, nb_clusters=4,
+                     target_ints=c.target_ints, target_idx=c.target_idx)
 
-scatterplot_2d(reduced_X, sample_names=c.titles, nb_clusters=4, loadings=False,
-                feature_names=v.features, sample_categories=(c.target_ints, c.target_idx))
+scatterplot_2d(reduced_X, sample_names=c.titles, nb_clusters=0, loadings=loadings,
+                feature_names=v.features,
+                target_ints=c.target_ints, target_idx=c.target_idx)
 # pca in 3d:
 reduced_X, loadings = pca(X, nb_dimensions=3)
-scatterplot_3d(reduced_X, sample_names=c.titles, nb_clusters=4, sample_categories=(c.target_ints, c.target_idx))
+scatterplot_3d(reduced_X, sample_names=c.titles, nb_clusters=4, target_ints=c.target_ints, target_idx=c.target_idx)
 
 # tsne in 2d:
-reduced_X = tsne(pca(X, nb_dimensions=10)[0], nb_dimensions=2)
-scatterplot_2d(reduced_X, sample_names=c.titles, nb_clusters=4, loadings=False,
-                feature_names=v.features, sample_categories=(c.target_ints, c.target_idx))
+#reduced_X = tsne(pca(X, nb_dimensions=10)[0], nb_dimensions=2)
+#scatterplot_2d(reduced_X, sample_names=c.titles, nb_clusters=4, loadings=False,
+#                feature_names=v.features, target_ints=c.target_ints, target_idx=c.target_idx)
 # tsne in 3d:
-reduced_X = tsne(pca(X, nb_dimensions=10)[0], nb_dimensions=3)
-scatterplot_3d(reduced_X, sample_names=c.titles, nb_clusters=4, sample_categories=(c.target_ints, c.target_idx))
-
+#reduced_X = tsne(pca(X, nb_dimensions=10)[0], nb_dimensions=3)
+#scatterplot_3d(reduced_X, sample_names=c.titles, nb_clusters=4, 
+#                target_ints=c.target_ints, target_idx=c.target_idx)
 
 dm = distance_matrix(X, 'minmax')
 
-clustermap(dm, sample_names=c.titles, sample_categories=(c.target_ints, c.target_idx), fontsize=8)
+clustermap(dm, sample_names=c.titles, fontsize=8,
+               target_ints=c.target_ints, target_idx=c.target_idx)
+
 cluster_tree = hierarchical_clustering(dm, linkage='ward')
-scipy_dendrogram(cluster_tree, sample_names=c.titles, sample_categories=(c.target_ints, c.target_idx), fontsize=8)
-ete_dendrogram(cluster_tree, sample_names=c.titles, sample_categories=(c.target_ints, c.target_idx), fontsize=8)
+scipy_dendrogram(cluster_tree, sample_names=c.titles, fontsize=8,
+                target_ints=c.target_ints, target_idx=c.target_idx)
+ete_dendrogram(cluster_tree, sample_names=c.titles, fontsize=8,
+                target_ints=c.target_ints, target_idx=c.target_idx)
 
 
 vnc_tree = vnc_clustering(dm, linkage='ward') # still need to work the sorting...
-scipy_dendrogram(vnc_tree, sample_names=c.titles, sample_categories=(c.target_ints, c.target_idx), fontsize=8)
+scipy_dendrogram(vnc_tree, sample_names=c.titles, fontsize=8,
+                 target_ints=c.target_ints, target_idx=c.target_idx)
 
