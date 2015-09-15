@@ -10,7 +10,7 @@ elif sys.version_info[0] == 3:
     ete_requirement = 'ete3'
     
 setup(
-    name='PyStyl',
+    name='pystyl',
     version='0.0.1',
     author='Folgert Karsdorp and Mike Kestemont',
     author_email='mike.kestemont@gmail.com',
