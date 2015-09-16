@@ -16,9 +16,6 @@ from pystyl.vectorization import Vectorizer
 
 std_output_path = os.path.dirname(os.path.abspath(__file__))+'/../output/'
 
-def untokenize(words):
-    return ' '.join(words)
-
 def get_tokenizer(option=None):
     """
     Notes:
