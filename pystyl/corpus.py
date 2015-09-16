@@ -201,6 +201,7 @@ class Corpus:
                  vector_space='tf_std', vocabulary=None):
         if not self.tokenized_texts:
             print('Warning: corpus has not been tokenized yet: running tokenization with default settings first')
+            self.tokenize()
 
         self.vectorizer = Vectorizer(mfi=mfi,
                                      ngram_type=ngram_type,
