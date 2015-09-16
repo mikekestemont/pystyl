@@ -22,8 +22,6 @@ if sys.version_info[0] == 2:
 elif sys.version_info[0] == 3:
     from ete3 import Tree, faces, AttrFace, TreeStyle, NodeStyle, TextFace, Face
 
-from PyStyl.visualization import color_plt_labels
-
 
 std_output_path = os.path.dirname(os.path.abspath(__file__))+'/../../output/'
 
@@ -96,8 +94,7 @@ class Dendrogram(list):
         Z = np.array(Z)
         return Z[:,1:]
 
-    def draw_scipy_tree(self, labels=None, title=None, fontsize=5,
-                        target_ints=None, target_idx=None,
+    def draw_scipy_tree(self, corpus, fontsize=5, color_leafs=True,
                         outputfile=std_output_path+'scipy_tree.pdf'):
         """
         Draw the dendrogram using plain pylab/scipy/matplotlib.
@@ -108,15 +105,18 @@ class Dendrogram(list):
         plt.rcParams['font.size'] = 6
         plt.rcParams['lines.linewidth'] = 0.75
         m = self.to_linkage_matrix()
+        labels = corpus.titles
         d = scipy_dendrogram(m, labels=labels,
                              leaf_font_size=fontsize,
                              color_threshold=0.7*max(m[:,2]),
                              leaf_rotation=180)
         ax = sns.plt.gca()
-        if target_ints:
-            color_plt_labels(ax, target_ints)
-        else:
-            color_plt_labels(ax)
+        for idx, label in enumerate(ax.get_xticklabels()):
+            label.set_rotation('vertical')
+            label.set_fontname('Arial')
+            label.set_fontsize(fontsize)
+            if color_leafs:
+                label.set_color(plt.cm.spectral(corpus.target_ints[idx] / 10.))
 
         ax.get_yaxis().set_ticks([])
         ax.spines['right'].set_visible(False)
@@ -135,9 +135,9 @@ class Dendrogram(list):
         sns.plt.subplots_adjust(bottom=0.15)
         fig.savefig(outputfile)
 
-    def draw_ete_tree(self, labels=None, title=None, fontsize=5,
+    def draw_ete_tree(self, corpus, fontsize=5,
+                      color_leafs=False,
                       save_newick=True, mode='c',
-                      target_ints=None, target_idx=None,
                       outputfile=std_output_path+'ete_tree.pdf'):
         T = to_tree(self.to_linkage_matrix())
         root = Tree()
@@ -156,10 +156,10 @@ class Dendrogram(list):
                     item2node[node].add_child(ch)
                     item2node[ch_node] = ch
                     to_visit.append(ch_node)
+        labels = corpus.titles
         if labels != None:
             for leaf in root.get_leaves():
                 leaf.name = str(labels[int(leaf.name)])
-
 
         def layout(node):
             if node.is_leaf():
@@ -186,7 +186,7 @@ class Dendrogram(list):
 
         for n in root.traverse():
            n.set_style(nstyle)
-
+        
         ts.layout_fn = layout
 
         if save_newick: # save tree in newick format for later manipulation in e.g. FigTree:

@@ -16,6 +16,9 @@ import numpy as np
 
 std_output_path = os.path.dirname(os.path.abspath(__file__))+'/../output/'
 
+def identity(y):
+    return y
+
 class StdDevScaler(BaseEstimator):
 
     def fit(self, X, y=None):
@@ -39,20 +42,25 @@ class Vectorizer:
     def __init__(self, mfi=100, ngram_type='word',
                  ngram_size=1, vocabulary=None,
                  vector_space='tf', lowercase=True,
-                 min_df=0.0, max_df=1.0, scale='std',):
+                 min_df=0.0, max_df=1.0, scale='std',
+                 ignore=None):
 
-        if vector_space not in 'tf tf_scaled tf_std tf_idf bin'.split():
+        if vector_space not in ('tf', 'tf_scaled', 'tf_std', 'tf_idf', 'bin'):
             raise ValueError('Wrong vector vector space model: %s' %(vector_space))
 
-        self.params = {'max_features':mfi,
+        self.params = {'max_features': mfi,
                  'max_df': max_df,
                  'min_df': min_df,
-                 'analyzer': ngram_type,
-                 'token_pattern': r'[^ ]+',
-                 'ngram_range':(ngram_size, ngram_size),
-                 'lowercase':lowercase,
-                 'decode_error':'ignore',
+                 'preprocessor': None,
+                 'ngram_range': (ngram_size, ngram_size),
+                 'lowercase': False,
+                 'decode_error': 'ignore',
                 }
+
+        if ngram_type == 'word':
+            self.params['tokenizer'] = identity
+        elif ngram_type in ('char', 'char_wb'):
+            self.params['analyzer'] = ngram_type
 
         if vocabulary:
             self.params['vocabulary'] = vocabulary
@@ -84,25 +92,14 @@ class Vectorizer:
             v = CountVectorizer(**self.params)
             self.transformer = Pipeline([('s1', v)])
 
-    def save(self, outfilename=std_output_path+'vectorizer.p'):
-        pickle.dump(self, open(outfilename, 'wb'))
-
-    @staticmethod
-    def load(infilename=std_output_path+'vectorizer.p'):
-        return pickle.load(open(infilename, 'rb'))
-
-    def fit_transform(self, texts):
+    def vectorize(self, texts):
         print('Fitting vectorizer')
         self.X = self.transformer.fit_transform(texts)
         # extract names for later convenience:
-        self.features = self.transformer.named_steps['s1'].get_feature_names()
+        self.feature_names = self.transformer.named_steps['s1'].get_feature_names()
         return self.X
 
     def remove_pronouns(self, X, language):
-        if language not in ('en'):
-            raise ValueError('No pronouns available for: %s' %(language))
-        pronoun_path = os.path.dirname(os.path.abspath(__file__))+'/pronouns/'
-        pronouns = {w.strip() for w in open(pronoun_path+language+'.txt') if not w.startswith('#')}
         rm_idxs = [self.features.index(p) for p in pronouns if p in self.features]
         keep_idxs = [i for i in range(len(self.features)) if i not in rm_idxs]
         self.features = [f for f in self.features if f not in pronouns]
