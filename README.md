@@ -1,7 +1,7 @@
 PyStyl
 ======
 
-PyStyl is Python package for stylometry or the quantitative analysis of writing style. PyStyl aims to be usable in three ways:
+PyStyl is a Python package for stylometry or the quantitative analysis of writing style. PyStyl aims to be usable in three ways:
 * as a Python API (for Python programmers)
 * as a standalone command line tool (for technical users who don't write Python)
 * via a Graphical User Interface that runs in the browser (for non-technical users)
