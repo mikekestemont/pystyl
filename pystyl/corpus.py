@@ -18,11 +18,19 @@ std_output_path = os.path.dirname(os.path.abspath(__file__))+'/../output/'
 
 def get_tokenizer(option=None):
     """
-    Notes:
-    * the tokenizer is a property of the corpus, instead of the vectorizer
-      in PyStyl, because the tokenizer is crucial to the segmentation.
-    * right now, the tokenizers aren't a property of the Corpus objects,
-      because they cannot pickled.
+    Return a nltk tokenizer.
+
+    Parameters
+    ----------
+    option : string, default=None
+        Which tokenizer to load currently supports:
+        - 'whitespace' > nltk's `WhitespaceTokenizer`
+        - 'words' > nltk's `RegexpTokenizer(r'\w+')`
+
+    Returns
+    ----------
+    An nltk tokenizer object.
+
     """
     if option == None or option == 'whitespace':
         return WhitespaceTokenizer()
@@ -35,6 +43,9 @@ class Corpus:
 
     def __init__(self, texts=[], titles=[], target_ints=[],
                        target_idx={}, language=None, tokenized_texts=None):
+        """
+        A class to represent corpora or a collection of texts.
+        """
         self.language = language
         self.texts = texts
         self.tokenized_texts = tokenized_texts
@@ -44,10 +55,25 @@ class Corpus:
         self.tokenizer_option = None
         self.vectorizer = None
 
-    def add_directory(self, directory, encoding='utf-8', ext='.txt'):
+    def add_directory(self, directory, encoding='utf-8', ext='txt'):
         """
-        - add texts under directory to the corpus
-        - by default, assumes utf8 in files and naming convention: <category>_<title>.txt 
+        Add the texts under a directory to the corpus. Consecutive calls
+        will add new texts to the corpus, instead of overwriting the old ones.
+
+        Parameters
+        ----------
+        directory : string
+            The path to the directory.
+            Note that texts under the directory have to conform to the 
+            following syntax: <category>_<title>.<ext>
+
+        encoding : string, default='utf-8'
+            The encoding of your files.
+
+        ext : str, default='txt'
+            The extension of the text files under directory
+            Only filenames with the extension will be loaded
+
         """
 
         directory = os.path.abspath(directory)
@@ -59,12 +85,12 @@ class Corpus:
             self.target_idx = []
             self.texts, self.titles, self.target_ints = [], [], []
 
-        for filename in sorted(glob.glob(directory+'/*'+ext)):
-            if filename.startswith("."):
+        for filename in sorted(glob.glob(directory+'/*.'+ext)):
+            if filename.startswith('.'):
                 continue
 
-            if '_' not in filename or not filename.endswith('.txt') or filename.count('_') > 1:
-                raise ValueError("Filename: "+filename+" wrongly formatted (should be: category_title.txt)")
+            if '_' not in filename or not filename.endswith('.'+ext) or filename.count('_') > 1:
+                raise ValueError('Filename: '+filename+' wrongly formatted (should be: category_title.ext)')
 
             with codecs.open(filename, mode='r', encoding=encoding) as infile:
                 text = infile.read()
@@ -84,6 +110,19 @@ class Corpus:
                     print("Ignored: "+filename+" (does not contain any text...)")
 
     def preprocess(self, alpha_only=True, lowercase=True):
+        """
+        Preprocess the (untokenized) texts in the corpus.
+
+        Parameters
+        ----------
+        alpha_only : boolean, default=True
+            Whether or not only to keep alphabetic symbols.
+            Whitespace characters remain unaffected.
+
+        lowercase : boolean, default=True
+            Whether or not to lowercase all characters.
+
+        """
         for idx, text in enumerate(self.texts):
             if lowercase:
                 text = text.lower()
@@ -92,6 +131,29 @@ class Corpus:
             self.texts[idx] = text
 
     def tokenize(self, min_size=0, max_size=0, tokenizer_option=None):
+        """
+        Tokenize the texts in the corpus and normalize text length.
+
+        Parameters
+        ----------
+        min_size : int, default=0
+            Minimum size of texts (in tokens), to be included
+            in the set of tokenized texts.
+            An error will be raised if `min_size` > `max_size`
+            If `min_size`=0, no texts will be left out.
+
+        max_size : int, default=0
+            Maximum size of texts (in tokens). Longer texts
+            will be truncated to max_size after tokenization.
+            An error will be raised if `max_size` > `min_size`
+            If `max_size`=0, no etxs will truncated.
+
+        tokenizer_option : str, default=None
+            Select the `nltk` tokenizer to be used. Currently
+            supports: 'whitespace' (split on whitespace)
+            and 'words' (alphabetic series of characters).
+
+        """
         # sanity check:
         if min_size and max_size and min_size > max_size:
             raise ValueError('Tokenization error: min_size > max_size')
@@ -117,6 +179,31 @@ class Corpus:
             self.tokenized_texts.append(tokens)
 
     def remove_tokens(self, rm_tokens=[], rm_pronouns=False, language=None):
+        """
+        Remove specific tokens from the tokenized texts.
+        Must be called before `corpus.vectorize()` to have effect.
+
+        Parameters
+        ----------
+        rm_tokens : list of str, default=[]
+            List of tokens to be removed.
+            Currently not sensitive to capitalization.
+
+        rm_pronouns : boolean, default=False
+            Whether to remove personal pronouns.
+            If the `corpus.language` is supported,
+            we will load the relevant list from 
+            under `pystyl/pronouns`.
+            Currently supported: 'en' (English).
+            The pronoun lists are identical to those
+            for 'Stylometry with R'.
+
+        language : str, default=None
+            Option to (re)set the `language` property
+            of the corpus.
+            Currently supported: 'en' (English).
+
+        """
         if not self.tokenized_texts:
             raise ValueError('Texts not tokenized yet.')
 
@@ -145,8 +232,32 @@ class Corpus:
 
     def segment(self, segment_size=0, step_size=0):
         """
-        Important: the tokenizer will have a great influence on the segmentation procedure!
+        Segment the tokenized_texts into smaller units.
+        Subsequent calls will overwrite previous segmentations.
+        Trailing tokens at the end of a text will be ignored
+        if they cannot form an entire segment anymore.
+
+        Parameters
+        ----------
+        segment_size : int, default=0
+            The size of the segments to be extracted
+            (in tokens).
+            If `segment_size`=0, no segmentation will be
+            applied to the tokenized texts.
+            A error will be raised if
+            `segment_size` > `self.max_size`
+
+        step_size : int, default=0
+            The nb of words in between two consecutive
+            segments (in tokens).
+            If `step_size`=zero, non-overlapping segments
+            will be created. Else, segments will partially
+            overlap.
+            A error will be raised if `step_size` > `segment_size`
+            or `step_size` > `self.max_size`
+
         """
+
         # sanity checks:
         if self.max_size and segment_size > self.max_size:
             raise ValueError('Segmentation error: segment_size > self.max_size')
@@ -180,6 +291,15 @@ class Corpus:
                 tmp_texts, tmp_titles, tmp_target_ints
 
     def temporal_sort(self):
+        """
+        Function which will garantee that `tokenized_texts` are
+        sorted in the correct order, e.g. in terms of chronology
+        or order of appearance in a text.
+        This function assumes that all the texts' category label is
+        an integer, reflecting the correct order of the original
+        texts. Else, an error will be raised.
+
+        """
         # check whether the categories are properly formatted:
         for cat in self.target_idx: # no generator here, to allow detailed error message
             if not cat.isdigit():
@@ -198,7 +318,19 @@ class Corpus:
 
     def vectorize(self, mfi=500, ngram_type='word', ngram_size=1,
                  vector_space='tf', vocabulary=None,
-                 max_df=1.0, min_df=0.0 ù):
+                 max_df=1.0, min_df=0.0):
+        """
+        Function to vectorize a corpus. Will add a vectorizer to corpus,
+        overwriting previous calls to this method. For the parametrization,
+        see the docs for `vectorization.Vectorize()` to which all args are passed.
+        Will raise an error if `tokenized_texts` are unavailable in the corpus.
+
+        Returns
+        -------
+        feature_names : list
+            The names of the final features extracted by the vectorizer.
+
+        """
         if not self.tokenized_texts:
             print('Warning: corpus has not been tokenized yet: running tokenization with default settings first')
             self.tokenize()
@@ -220,9 +352,32 @@ class Corpus:
         return self.vectorizer.feature_names
 
     def get_untokenized_texts(self):
+        """
+        Get the tokenized texts in an untokenized version: 
+        all token are re-joined using a single space character.
+        This is useful for the extraction of characters ngram_size
+        by the vectorizer.
+
+        Returns
+        -------
+        untokenized_texts : list
+            The names of the final features extracted by the vectorizer.
+
+        """
         return [' '.join(t) for t in self.tokenized_texts]
 
     def __len__(self):
+        """
+        Count the nb of texts currently in corpus.
+
+        Returns
+        -------
+        nb_texts : int
+            If `tokenized_texts` is available, the nb
+            of tokenized texts will be returned.
+            Else, the nb of untokenized texts is returned.
+
+        """
         if self.tokenized_texts:
             return len(self.tokenized_texts)
         elif self.texts:
@@ -231,9 +386,23 @@ class Corpus:
             return 0
 
     def __repr__(self):
+        """
+        Returns a simple string representation of the corpus,
+        indicating the nb of texts currently available.
+
+        """
         return "<Corpus(%s texts)> " % len(self)
 
     def __str__(self):
+        """
+        Returns a string representation of the corpus,
+        indicating the nb of texts currently available
+        and the title and category for each text, as well
+        the first 10 tokens of each text, if tokenized texts
+        are available, and else the 30 first characters of
+        each text.
+
+        """
         info_string = repr(self)
         if self.tokenized_texts:
             info_string += '\nTokenized texts:'
