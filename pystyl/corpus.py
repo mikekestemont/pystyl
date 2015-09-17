@@ -130,7 +130,6 @@ class Corpus:
                 raise ValueError('No pronouns available for: %s' %(self.language))
             pronoun_path = os.path.dirname(os.path.abspath(__file__))+'/pronouns/'
             pronouns = {w.strip() for w in open(pronoun_path+self.language+'.txt') if not w.startswith('#')}
-            print(pronouns)
         else:
             pronouns = set()
 
@@ -159,7 +158,7 @@ class Corpus:
         self.step_size = step_size
         self.segment_size = segment_size
 
-        # segment if necessary:
+        # segment if necessary (else we leave the tokenized_texts unchanged):
         if self.segment_size:
             if not self.step_size:
                 self.step_size = self.segment_size
@@ -174,8 +173,8 @@ class Corpus:
                     tmp_target_ints.append(target_int)
                     # update:
                     sample_cnt += 1
-                    start_idx += step_size
-                    end_idx += step_size
+                    start_idx += self.step_size
+                    end_idx += self.step_size
 
             self.tokenized_texts, self.titles, self.target_ints = \
                 tmp_texts, tmp_titles, tmp_target_ints
@@ -198,7 +197,8 @@ class Corpus:
         _, self.tokenized_texts, self.titles, self.target_ints = zip(*zipped)
 
     def vectorize(self, mfi=500, ngram_type='word', ngram_size=1,
-                 vector_space='tf_std', vocabulary=None):
+                 vector_space='tf', vocabulary=None,
+                 max_df=1.0, min_df=0.0 ù):
         if not self.tokenized_texts:
             print('Warning: corpus has not been tokenized yet: running tokenization with default settings first')
             self.tokenize()
@@ -207,7 +207,9 @@ class Corpus:
                                      ngram_type=ngram_type,
                                      ngram_size=ngram_size,
                                      vector_space=vector_space,
-                                     vocabulary=vocabulary)
+                                     vocabulary=vocabulary,
+                                     min_df=min_df,
+                                     max_df=max_df)
 
         if ngram_type == 'word':
             self.vectorizer.vectorize(self.tokenized_texts)
@@ -215,6 +217,7 @@ class Corpus:
             self.vectorizer.vectorize(self.get_untokenized_texts())
         else:
             raise ValueError('Unsupported feature type: %s' %(ngram_type))
+        return self.vectorizer.feature_names
 
     def get_untokenized_texts(self):
         return [' '.join(t) for t in self.tokenized_texts]

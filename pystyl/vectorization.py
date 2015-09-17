@@ -42,8 +42,7 @@ class Vectorizer:
     def __init__(self, mfi=100, ngram_type='word',
                  ngram_size=1, vocabulary=None,
                  vector_space='tf', lowercase=True,
-                 min_df=0.0, max_df=1.0, scale='std',
-                 ignore=None):
+                 min_df=0.0, max_df=1.0, ignore=None):
 
         if vector_space not in ('tf', 'tf_scaled', 'tf_std', 'tf_idf', 'bin'):
             raise ValueError('Wrong vector vector space model: %s' %(vector_space))
@@ -93,17 +92,9 @@ class Vectorizer:
             self.transformer = Pipeline([('s1', v)])
 
     def vectorize(self, texts):
-        print('Fitting vectorizer')
         self.X = self.transformer.fit_transform(texts)
         # extract names for later convenience:
         self.feature_names = self.transformer.named_steps['s1'].get_feature_names()
-        return self.X
-
-    def remove_pronouns(self, X, language):
-        rm_idxs = [self.features.index(p) for p in pronouns if p in self.features]
-        keep_idxs = [i for i in range(len(self.features)) if i not in rm_idxs]
-        self.features = [f for f in self.features if f not in pronouns]
-        self.X = X[:, keep_idxs]
         return self.X
 
 
