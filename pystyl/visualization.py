@@ -14,7 +14,23 @@ from bokeh.plotting import figure, show, output_file, save
 std_output_path = os.path.dirname(os.path.abspath(__file__))+'/../output/'
 
 def scatterplot(corpus, plot_type='static', nb_clusters=0,
-                coor=None, loadings=None, outputfile=None):
+                coor=None, loadings=None, outputfile=None,
+                save=False):
+    """
+    Draw two-dimensional scatterplot of corpus, given the
+    coordinates passed.
+    
+    Parameters
+    ----------
+    plot_type : string, default='static'
+        The type of plot to be made. Currently supports:
+        - 'static': will call `static_scatterplot()`
+        - 'interactive': will call `interactive_scatterplot()`
+
+    All other parameters are passed to `static_scatterplot()`
+    and `interactive_scatterplot()`.
+
+    """
     if plot_type == 'static':
         return static_scatterplot(corpus, coor, loadings=loadings,
                                   outputfile=outputfile, nb_clusters=nb_clusters)
@@ -24,7 +40,38 @@ def scatterplot(corpus, plot_type='static', nb_clusters=0,
     else:
         raise ValueError('Unsupported plot_type: %s' %(plot_type))
 
-def static_scatterplot(corpus, coor=None, outputfile=None, nb_clusters=0, loadings=None):
+def static_scatterplot(corpus, coor=None, outputfile=None,
+                       nb_clusters=0, loadings=None, save=False):
+    """
+    Draw two-dimensional scatterplot of the corpus, given the
+    coordinates passed. Produces a static matplotlib/seaborn
+    plot.
+    
+    Parameters
+    ----------
+    corpus : `Corpus` instance
+        The corpus to be plotted.
+    coor : array-like, [n_texts, 2]
+        The coordinates of the texts to be used.
+    outputfile : str
+        The path where the plot should be saved.
+    nb_clusters : int, default=0
+        If `nb_clusters` > 0, will run a hierarchical
+        cluster analysis, identifying `nb_clusters`
+        clusters using `coor`. Texts will be coloured
+        according to these clusters as a reading aid.
+        Else, clusters will be colored according to
+        their category.
+    loadings : array-like [n_features, n_dimensions]
+        If loadings are passed, the scatterplot will
+        be overlaid with the loadings of the original
+        features on the twin axis.
+    save : boolean, default=False
+        Whether to save the plot to `outputfile`.
+
+
+    """
+    plt.clf()
     if coor.shape[1] < 2:
         raise ValueError('Only two-dimensional matrices are supported')
     if coor is None:
@@ -77,12 +124,37 @@ def static_scatterplot(corpus, coor=None, outputfile=None, nb_clusters=0, loadin
     ax1.set_xticks([])
     ax1.set_yticklabels([])
     ax1.set_yticks([])
-
-    sns.plt.savefig(outputfile, bbox_inches=0)
-    plt.clf()
+    if save:
+        sns.plt.savefig(outputfile, bbox_inches=0)
     return
 
 def interactive_scatterplot(corpus=None, coor=None, outputfile=None, nb_clusters=0):
+    """
+    Draw an interactive two-dimensional html-scatterplot
+    of the corpus, given the coordinates passed. Uses Bokeh
+    to produce an interactive plots which supports hovering.
+    Useful for visualizing large datasets without cluttering
+    the plot with sample names.
+    
+    Parameters
+    ----------
+    corpus : `Corpus` instance
+        The corpus to be plotted.
+    coor : array-like, [n_texts, 2]
+        The coordinates of the texts to be used.
+    outputfile : str
+        The path where the plot should be saved.
+    nb_clusters : int, default=0
+        If `nb_clusters` > 0, will run a hierarchical
+        cluster analysis, identifying `nb_clusters`
+        clusters using `coor`. Texts will be coloured
+        according to these clusters as a reading aid.
+        Else, clusters will be colored according to
+        their category.
+    save : boolean, default=False
+        Whether to save the plot to `outputfile`.
+
+    """
     if coor.shape[1] < 2:
         raise ValueError('Only two-dimensional matrices are supported')
     if not outputfile:
@@ -123,10 +195,36 @@ def interactive_scatterplot(corpus=None, coor=None, outputfile=None, nb_clusters
     p.axis.major_tick_line_color = None
     p.axis[0].ticker.num_minor_ticks = 0
     p.axis[1].ticker.num_minor_ticks = 0
-    save(p)
+    if save:
+        save(p)
 
 
 def scatterplot_3d(corpus, coor, outputfile=std_output_path+'3d.pdf', nb_clusters=0):
+    """
+    Draw a 3-dimensional scatterplot of the corpus, given the
+    coordinates passed. Produces a static matplotlib/seaborn
+    plot.
+    
+    Parameters
+    ----------
+    corpus : `Corpus` instance
+        The corpus to be plotted.
+    coor : array-like, [n_texts, 3]
+        The coordinates of the texts to be used.
+    outputfile : str
+        The path where the plot should be saved.
+    nb_clusters : int, default=0
+        If `nb_clusters` > 0, will run a hierarchical
+        cluster analysis, identifying `nb_clusters`
+        clusters using `coor`. Texts will be coloured
+        according to these clusters as a reading aid.
+        Else, clusters will be colored according to
+        their category.
+    save : boolean, default=False
+        Whether to save the plot to `outputfile`.
+
+    """
+    plt.clf()
     if coor.shape[1] < 3:
         raise ValueError('Only three-dimensional matrices are supported')
     if not outputfile:
@@ -155,13 +253,35 @@ def scatterplot_3d(corpus, coor, outputfile=std_output_path+'3d.pdf', nb_cluster
             ax.text(x, y, z, name, ha='center', va="center",
                      color=plt.cm.spectral(cluster_label / 10.),
                      fontdict={'family': 'Arial', 'size': 10})
-
-    plt.savefig(outputfile, bbox_inches=0)
-    plt.clf()
+    if save:
+        plt.savefig(outputfile, bbox_inches=0)
 
 
 def clustermap(corpus, distance_matrix=None, color_leafs=True,
                outputfile=std_output_path+'clustermap.pdf', fontsize=5):
+    """
+    Draw a square clustermap of the corpus using seaborn's
+    `clustermap`.
+    
+    Parameters
+    ----------
+    corpus : `Corpus` instance
+        The corpus to be plotted.
+    distance_matrix : array-like, [n_texts, n_texts]
+        A square distance matrix holding the 
+        pairwise distances between all the texts in 
+        the corpus.
+    color_leafs: boolean, default=True,
+        If true, will color the text labels on the
+        axis according to their category.
+    outputfile : str
+        The path where the plot should be saved.
+    fontsize : int, default=5
+        The fontsize of the labels on the axes.
+    save : boolean, default=False
+        Whether to save the plot to `outputfile`.
+
+    """
     # convert to pandas dataframe:
     labels = corpus.titles
     df = pd.DataFrame(data=distance_matrix, columns=labels)
@@ -190,15 +310,64 @@ def clustermap(corpus, distance_matrix=None, color_leafs=True,
     plt.clf()
 
 def scipy_dendrogram(corpus, tree, outputfile=std_output_path+'scipy_dendrogram.pdf',
-                     fontsize=5, color_leafs=True):
+                     fontsize=5, color_leafs=True, save=False):
+    """
+    Draw a dendrogram of the texts in the corpus using scipy.
+    
+    Parameters
+    ----------
+    corpus : `Corpus` instance
+        The corpus to be plotted.
+    tree : `(VN)Clusterer` object
+        The clusterer object which was
+        applied to the corpus.
+    color_leafs: boolean, default=True,
+        If true, will color the text labels
+        according to their category.
+    outputfile : str
+        The path where the plot should be saved.
+    fontsize : int, default=5
+        The fontsize of the labels on the axes.
+
+    """
     return tree.dendrogram.draw_scipy_tree(corpus, outputfile=outputfile,
-                  fontsize=fontsize, color_leafs=color_leafs)
+                  fontsize=fontsize, color_leafs=color_leafs, save=save)
 
 def ete_dendrogram(corpus, tree, outputfile=std_output_path+'ete_dendrogram.pdf',
-                   fontsize=5, save_newick=True, mode='c', color_leafs=False):
+                   fontsize=5, save_newick=True, mode='c',
+                   color_leafs=False, save=False):
+    """
+    Draw a dendrogram of the texts in the corpus using ETE.
+    
+    Parameters
+    ----------
+    corpus : `Corpus` instance
+        The corpus to be plotted.
+    tree : `(VN)Clusterer` object
+        The clusterer object which was
+        applied to the corpus.
+    outputfile : str
+        The path where the plot should be saved.
+    color_leafs: boolean, default=True,
+        If true, will color the text labels
+        according to their category.
+    fontsize : int, default=5
+        The fontsize of the labels on the axes.
+    save_newick : boolean, default=True
+        Whether to dump a representation of the
+        tree in newick-format, which can later
+        be modified using software like FigTree:
+        http://tree.bio.ed.ac.uk/software/figtree/
+    mode : str, default='c'
+        The type of tree to be drawn. Supports:
+        - 'c': circular dendrogram
+        - 'r': traditional, rectangular dendrogram
+    save : boolean, default=False
+        Whether to save the plot to `outputfile`.
+    """
     return tree.dendrogram.draw_ete_tree(corpus, outputfile=outputfile,
                    fontsize=fontsize, save_newick=save_newick, mode=mode,
-                   color_leafs=color_leafs)
+                   color_leafs=color_leafs, save=save)
     
 
 
