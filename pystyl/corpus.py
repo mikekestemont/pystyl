@@ -244,14 +244,15 @@ class Corpus:
             If the `corpus.language` is supported,
             we will load the relevant list from 
             under `pystyl/pronouns`.
-            Currently supported: 'en' (English).
             The pronoun lists are identical to those
             for 'Stylometry with R'.
 
         language : str, default=None
             Option to (re)set the `language` property
             of the corpus.
-            Currently supported: 'en' (English).
+            Currently supported:
+                - 'en' (English)
+                - 'nl' (Dutch)
 
         """
         if not self.tokenized_texts:
@@ -263,7 +264,7 @@ class Corpus:
                 self.language = language
             if not self.language:
                 raise ValueError('No language set for corpus (cf. pronouns)')
-            if self.language not in ('en'):
+            if self.language not in ('en', 'nl'):
                 raise ValueError('No pronouns available for: %s' %(self.language))
             pronoun_path = os.path.dirname(os.path.abspath(__file__))+'/pronouns/'
             pronouns = {w.strip() for w in open(pronoun_path+self.language+'.txt') if not w.startswith('#')}
