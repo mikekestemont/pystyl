@@ -16,7 +16,6 @@ from nltk.tokenize import WhitespaceTokenizer, RegexpTokenizer
 
 from . vectorization import Vectorizer
 
-std_output_path = os.path.dirname(os.path.abspath(__file__))+'/../output/'
 
 def get_tokenizer(option=None):
     """

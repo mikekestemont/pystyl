@@ -24,8 +24,6 @@ elif sys.version_info[0] == 3:
 
 from .. visualization import plt_fig_to_svg
 
-std_output_path = os.path.dirname(os.path.abspath(__file__))+'/../../output/'
-
 class DendrogramNode(object):
     """
     Represents a node in a dendrogram.
@@ -96,8 +94,7 @@ class Dendrogram(list):
         return Z[:,1:]
 
     def draw_scipy_tree(self, corpus, fontsize=5, color_leafs=True,
-                        outputfile=std_output_path+'scipy_tree.pdf',
-                        save=False, show=True, return_svg=True):
+                        outputfile=None, save=False, show=True, return_svg=True):
         """
         Draw the dendrogram using plain pylab/scipy/matplotlib.
         """
@@ -148,7 +145,7 @@ class Dendrogram(list):
     def draw_ete_tree(self, corpus, fontsize=5,
                       color_leafs=False,
                       save_newick=True, mode='c',
-                      outputfile=std_output_path+'ete_tree.pdf',
+                      outputfile=None,
                       return_svg=True, show=False,
                       save=False):
         T = to_tree(self.to_linkage_matrix())

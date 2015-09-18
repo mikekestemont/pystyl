@@ -16,8 +16,6 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import scipy.sparse as sp
 import numpy as np
 
-std_output_path = os.path.dirname(os.path.abspath(__file__))+'/../output/'
-
 def identity(y):
     """
     Simple identity function.

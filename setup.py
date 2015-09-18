@@ -14,7 +14,7 @@ setup(
     version='0.0.1',
     author='Folgert Karsdorp and Mike Kestemont',
     author_email='mike.kestemont@gmail.com',
-    packages=['app', 'pystyl', 'pystyl.clustering'],
+    packages=['app', 'pystyl', 'pystyl.clustering', 'pystyl.pronouns'],
     url='http://pypi.python.org/pypi/pystyl/',
     scripts=['pystyl/bin/pystyl'],
     license='LICENSE.txt',

@@ -12,8 +12,6 @@ import pandas as pd
 from bokeh.models import HoverTool, ColumnDataSource, Axis
 from bokeh.plotting import figure, show, output_file, save
 
-std_output_path = os.path.dirname(os.path.abspath(__file__))+'/../output/'
-
 def plt_fig_to_svg(fig):
     imgdata = StringIO.StringIO()
     fig.savefig(imgdata, format='svg')
@@ -88,8 +86,6 @@ def static_scatterplot(corpus, coor=None, outputfile=None,
         raise ValueError('Only two-dimensional matrices are supported')
     if coor is None:
         ValueError('Please specify valid (2D) coordinates')
-    if not outputfile:
-        outputfile = std_output_path+'2d(static).pdf'
 
     sns.set_style('dark')
     sns.plt.rcParams['axes.linewidth'] = 0.4
@@ -175,8 +171,6 @@ def interactive_scatterplot(corpus=None, coor=None, outputfile=None, nb_clusters
     """
     if coor.shape[1] < 2:
         raise ValueError('Only two-dimensional matrices are supported')
-    if not outputfile:
-        outputfile = std_output_path+'2d(interactive).html'
 
     output_file(outputfile)
     TOOLS="pan,wheel_zoom,reset,hover,box_select,save"
@@ -217,8 +211,7 @@ def interactive_scatterplot(corpus=None, coor=None, outputfile=None, nb_clusters
         save(p)
 
 
-def scatterplot_3d(corpus, coor,
-                  outputfile=std_output_path+'3d.pdf',
+def scatterplot_3d(corpus, coor, outputfile,
                   nb_clusters=0,
                   save=False, show=False, return_svg=False):
     """
@@ -283,7 +276,7 @@ def scatterplot_3d(corpus, coor,
 
 
 def clustermap(corpus, distance_matrix=None, color_leafs=True,
-               outputfile=std_output_path+'clustermap.pdf', fontsize=5,
+               outputfile=None,
                save=False, show=False, return_svg=False):
     """
     Draw a square clustermap of the corpus using seaborn's
@@ -340,8 +333,7 @@ def clustermap(corpus, distance_matrix=None, color_leafs=True,
         return plt_fig_to_svg(cm)
     
 
-def scipy_dendrogram(corpus, tree,
-                     outputfile=std_output_path+'scipy_dendrogram.pdf',
+def scipy_dendrogram(corpus, tree, outputfile,
                      fontsize=5, color_leafs=True,
                      show=True, save=False, return_svg=True):
     """
@@ -367,7 +359,7 @@ def scipy_dendrogram(corpus, tree,
                   fontsize=fontsize, color_leafs=color_leafs, save=save,
                   show=show, return_svg=return_svg)
 
-def ete_dendrogram(corpus, tree, outputfile=std_output_path+'ete_dendrogram.pdf',
+def ete_dendrogram(corpus, tree, outputfile,
                    fontsize=5, save_newick=True, mode='c', show=False,
                    color_leafs=False, save=False, return_svg=True):
     """
