@@ -46,12 +46,14 @@ class Corpus:
     def __init__(self, texts=[], titles=[], target_ints=[],
                        target_idx={}, language=None, tokenized_texts=None):
         """
-        A class to represent corpora or a collection of texts.
+        A class to represent corpora or a collection of texts. Note
+        that titles should be unique.
+
         """
         self.language = language
         self.texts = texts
         self.tokenized_texts = tokenized_texts
-        self.titles = titles
+        self.titles = titles # should be unique
         self.target_ints = target_ints # integers corresponding to category names
         self.target_idx = target_idx # actual category names as strings
         self.tokenizer_option = None
@@ -118,6 +120,8 @@ class Corpus:
             Category of the text to be added.
 
         """
+        if title in self.titles:
+            raise ValueError('Titles should be unique: %s is already in the corpus' %(title))
         if target_name not in self.target_idx:
             self.target_idx.append(target_name)
                     
