@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 def minmax(x, y):
     mins, maxs = 0.0, 0.0
