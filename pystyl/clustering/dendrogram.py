@@ -95,10 +95,12 @@ class Dendrogram(list):
         return Z[:,1:]
 
     def draw_scipy_tree(self, corpus, fontsize=5, color_leafs=True,
-                        outputfile=std_output_path+'scipy_tree.pdf'):
+                        outputfile=std_output_path+'scipy_tree.pdf',
+                        save=False):
         """
         Draw the dendrogram using plain pylab/scipy/matplotlib.
         """
+        plt.clf()
         fig = sns.plt.figure()
         ax = fig.add_subplot(111, axisbg='white')
         plt.rcParams['font.family'] = 'arial'
@@ -133,7 +135,8 @@ class Dendrogram(list):
         sns.plt.rcParams["axes.facecolor"] = "white"
         sns.plt.rcParams["savefig.facecolor"] = "white"
         sns.plt.subplots_adjust(bottom=0.15)
-        fig.savefig(outputfile)
+        if save:
+            fig.savefig(outputfile)
 
     def draw_ete_tree(self, corpus, fontsize=5,
                       color_leafs=False,
@@ -192,5 +195,6 @@ class Dendrogram(list):
         if save_newick: # save tree in newick format for later manipulation in e.g. FigTree:
             root.write(outfile=os.path.splitext(outputfile)[0]+'.newick')
 
-        root.render(outputfile, tree_style=ts)
+        if save:
+            root.render(outputfile, tree_style=ts)
         return root
