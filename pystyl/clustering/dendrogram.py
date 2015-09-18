@@ -141,7 +141,8 @@ class Dendrogram(list):
     def draw_ete_tree(self, corpus, fontsize=5,
                       color_leafs=False,
                       save_newick=True, mode='c',
-                      outputfile=std_output_path+'ete_tree.pdf'):
+                      outputfile=std_output_path+'ete_tree.pdf',
+                      return_svg=True):
         T = to_tree(self.to_linkage_matrix())
         root = Tree()
         root.dist = 0
@@ -197,4 +198,6 @@ class Dendrogram(list):
 
         if save:
             root.render(outputfile, tree_style=ts)
-        return root
+        
+        if return_svg:
+            return root.render("%%return")[0]

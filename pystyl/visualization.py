@@ -335,7 +335,7 @@ def scipy_dendrogram(corpus, tree, outputfile=std_output_path+'scipy_dendrogram.
 
 def ete_dendrogram(corpus, tree, outputfile=std_output_path+'ete_dendrogram.pdf',
                    fontsize=5, save_newick=True, mode='c',
-                   color_leafs=False, save=False):
+                   color_leafs=False, save=False, return_svg=True):
     """
     Draw a dendrogram of the texts in the corpus using ETE.
     
@@ -364,10 +364,14 @@ def ete_dendrogram(corpus, tree, outputfile=std_output_path+'ete_dendrogram.pdf'
         - 'r': traditional, rectangular dendrogram
     save : boolean, default=False
         Whether to save the plot to `outputfile`.
+    return_svg : boolean, default=True
+        Whether to return the plot in SVG-format.
+        Useful for the GUI.
     """
     return tree.dendrogram.draw_ete_tree(corpus, outputfile=outputfile,
                    fontsize=fontsize, save_newick=save_newick, mode=mode,
-                   color_leafs=color_leafs, save=save)
+                   color_leafs=color_leafs, save=save,
+                   return_svg=return_svg)
     
 
 
