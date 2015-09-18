@@ -97,18 +97,64 @@ class Corpus:
                 text = infile.read()
                 if text.strip():
                     target_name, title = os.path.basename(filename).replace('.'+ext, '').split('_')
-
-                    if target_name not in self.target_idx:
-                        self.target_idx.append(target_name)
-                    
-                    target_int = self.target_idx.index(target_name)
-                    
-                    self.texts.append(text)
-                    self.titles.append(title)
-                    self.target_ints.append(target_int)
+                    self.add_text(text=text, title=title, target_name=target_name)
 
                 else:
                     print("Ignored: "+filename+" (does not contain any text...)")
+
+    def add_text(self, text, title, target_name):
+        """
+        Add a single new text to the corpus.
+
+        Parameters
+        ----------
+        text : str
+            The text to be added.
+
+        title : str
+            Title of the text to be added.
+
+        target_name : str
+            Category of the text to be added.
+
+        """
+        if target_name not in self.target_idx:
+            self.target_idx.append(target_name)
+                    
+        target_int = self.target_idx.index(target_name)
+                    
+        self.texts.append(text)
+        self.titles.append(title)
+        self.target_ints.append(target_int)
+
+    def add_texts(self, texts, titles, target_names):
+        """
+        Add series of new texts to the corpus.
+
+        Parameters
+        ----------
+        texts : list-like
+            The text to be added.
+
+        title : list-like
+            Titles of the texts to be added.
+
+        target_name : list-like
+            Categories of the texts to be added.
+
+        """
+        if not texts or not titles or not target_names:
+            raise ValueError('Please specify a text,\
+                              title and target_name\
+                              for each text')
+        if not len(texts) == len(titles)\
+            and len(titles) == len(target_names):
+            raise ValueError('Nb of texts, titles and\
+                             target_names should be the\
+                             same')
+        for text, title, target_name in zip(texts, titles, target_names):
+            self.add_text(text=text, title=title, target_name=target_name)
+
 
     def preprocess(self, alpha_only=True, lowercase=True):
         """
