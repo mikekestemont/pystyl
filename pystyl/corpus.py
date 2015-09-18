@@ -14,7 +14,7 @@ elif sys.version_info[0] == 3:
 
 from nltk.tokenize import WhitespaceTokenizer, RegexpTokenizer
 
-from pystyl.vectorization import Vectorizer
+from . vectorization import Vectorizer
 
 std_output_path = os.path.dirname(os.path.abspath(__file__))+'/../output/'
 
@@ -82,7 +82,6 @@ class Corpus:
         if not os.path.isdir(directory):
             raise IOError('Folder %s does not exist...' %(directory))
 
-        print('Adding texts from:', directory)
         if not self.target_idx:
             self.target_idx = []
             self.texts, self.titles, self.target_ints = [], [], []

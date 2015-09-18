@@ -16,7 +16,7 @@ setup(
     author_email='mike.kestemont@gmail.com',
     packages=['app', 'pystyl', 'pystyl.clustering'],
     url='http://pypi.python.org/pypi/pystyl/',
-    scripts=['bin/pystyl']
+    scripts=['pystyl/bin/pystyl'],
     license='LICENSE.txt',
     description='Computational Stylistics in Python',
     long_description=open('README.md').read(),

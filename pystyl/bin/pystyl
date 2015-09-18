@@ -1,3 +1,55 @@
+# -*- coding: utf-8 -*-
 #!/usr/bin/env python
 
-import pystyl
+import sys
+import os
+import ConfigParser
+
+from pystyl.corpus import Corpus
+from pystyl.analysis import pca, tsne, distance_matrix, hierarchical_clustering, vnc_clustering
+from pystyl.visualization import scatterplot, scatterplot_3d, clustermap, scipy_dendrogram, ete_dendrogram
+
+# parse the config file
+config_path = os.path.expanduser(sys.argv[1])
+config = ConfigParser.ConfigParser()
+config.read(config_path)
+
+# create the corpus
+corpus = Corpus(language=config.get('corpus', 'language'))
+corpus.add_directory(directory=config.get('corpus', 'input_dir'))
+
+# prepare the corpus for analysis
+corpus.preprocess(alpha_only=config.getboolean('preprocessing', 'alpha_only'),
+                  lowercase=config.getboolean('preprocessing', 'lowercase'))
+
+corpus.tokenize(min_size=config.getint('tokenization', 'min_size'),
+                max_size=config.getint('tokenization', 'max_size'),
+                tokenizer_option=config.get('tokenization', 'tokenizer_option'))
+
+corpus.segment(segment_size=config.getint('segmentation', 'segment_size'),
+               step_size=config.getint('segmentation', 'step_size'))
+
+corpus.remove_tokens(rm_pronouns=config.getboolean('removal', 'rm_pronouns'))
+
+temporal_sort = config.getboolean('sorting', 'temporal_sort')
+if temporal_sort:
+    corpus.temporal_sort()
+
+corpus.vectorize(mfi=config.getint('vectorization', 'mfi'),
+                 ngram_type=config.get('vectorization', 'ngram_type'),
+                 ngram_size=config.getint('vectorization', 'ngram_size'),
+                 vector_space=config.get('vectorization', 'vector_space'),
+                 min_df=config.getfloat('vectorization', 'min_df'),
+                 max_df=config.getfloat('vectorization', 'max_df'))
+
+# analyse:
+pca_coor, pca_loadings = pca(corpus, nb_dimensions=2)
+
+# visualize and dump plot:
+scatterplot(corpus,
+            coor=pca_coor,
+            loadings=pca_loadings,
+            plot_type='static',
+            save=True,
+            outputfile=config.get('visualization', 'outputfile'))
+

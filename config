@@ -1,0 +1,39 @@
+# Configuration file for pystyl command line tool
+
+[corpus]
+input_dir = ../../data/dummy
+language = en
+
+[preprocessing]
+alpha_only = True
+lowercase = True
+
+[tokenization]
+min_size = 0
+max_size = 0
+tokenizer_option = whitespace
+
+[segmentation]
+segment_size = 0
+step_size = 0
+
+[removal]
+rm_pronouns = False
+
+[sorting]
+temporal_sort = False
+
+[vectorization]
+mfi = 500
+ngram_type = word
+ngram_size = 1
+vector_space = tf
+max_df = 1.0
+min_df = 0.0
+
+[analysis]
+type = pca
+
+[visualization]
+type = static
+outputfile = ~/Desktop/pca_test.pdf

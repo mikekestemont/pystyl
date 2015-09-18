@@ -22,6 +22,7 @@ if sys.version_info[0] == 2:
 elif sys.version_info[0] == 3:
     from ete3 import Tree, faces, AttrFace, TreeStyle, NodeStyle, TextFace, Face
 
+from .. visualization import plt_fig_to_svg
 
 std_output_path = os.path.dirname(os.path.abspath(__file__))+'/../../output/'
 
@@ -101,6 +102,8 @@ class Dendrogram(list):
         Draw the dendrogram using plain pylab/scipy/matplotlib.
         """
         plt.clf()
+        if outputfile:
+            outputfile = os.path.expanduser(outputfile)
         fig = sns.plt.figure()
         ax = fig.add_subplot(111, axisbg='white')
         plt.rcParams['font.family'] = 'arial'
@@ -139,6 +142,8 @@ class Dendrogram(list):
             fig.savefig(outputfile)
         if show:
             sns.plt.show()
+        if return_svg:
+            return plt_fig_to_svg(fig)
 
     def draw_ete_tree(self, corpus, fontsize=5,
                       color_leafs=False,
@@ -196,6 +201,9 @@ class Dendrogram(list):
         
         ts.layout_fn = layout
 
+        if outputfile:
+            outputfile = os.path.expanduser(outputfile)
+
         if save_newick: # save tree in newick format for later manipulation in e.g. FigTree:
             root.write(outfile=os.path.splitext(outputfile)[0]+'.newick')
 
@@ -203,5 +211,5 @@ class Dendrogram(list):
             root.render(outputfile, tree_style=ts)
         if show:
             root.show(tree_style=ts) 
-        if return_svg:
+        if return_svg: # return the SVG as a string
             return root.render("%%return")[0]
