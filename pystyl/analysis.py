@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import print_function
 
 from sklearn.decomposition import PCA
@@ -108,7 +109,7 @@ def distance_matrix(corpus, metric='manhattan'):
     For a comparison/explication of the metrics consult:
     - S. Argamon, 'Interpreting Burrows's Delta: Geometric
       and Probabilistic Foundations', LLC 23:3 (2008).
-    - Evert S. et al., Towards a better understanding of Burrows’s
+    - Evert S. et al., Towards a better understanding of Burrows's
       Delta in literary authorship attribution. Proceedings of the
       Fourth Workshop on Computational Linguistics for Literature
       (at NAACL HLT 2015), 2015.

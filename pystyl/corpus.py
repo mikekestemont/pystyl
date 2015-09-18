@@ -97,7 +97,7 @@ class Corpus:
             with codecs.open(filename, mode='r', encoding=encoding) as infile:
                 text = infile.read()
                 if text.strip():
-                    target_name, title = os.path.basename(filename).replace(ext, '').split('_')
+                    target_name, title = os.path.basename(filename).replace('.'+ext, '').split('_')
 
                     if target_name not in self.target_idx:
                         self.target_idx.append(target_name)

@@ -2,6 +2,7 @@
 from __future__ import print_function
 
 import os
+import StringIO
 
 from sklearn.cluster import AgglomerativeClustering
 import matplotlib.pyplot as plt
@@ -13,9 +14,15 @@ from bokeh.plotting import figure, show, output_file, save
 
 std_output_path = os.path.dirname(os.path.abspath(__file__))+'/../output/'
 
+def plt_fig_to_svg(fig):
+    imgdata = StringIO.StringIO()
+    fig.savefig(imgdata, format='svg')
+    imgdata.seek(0)  # rewind the data
+    return imgdata.buf  # this is svg data
+
 def scatterplot(corpus, plot_type='static', nb_clusters=0,
                 coor=None, loadings=None, outputfile=None,
-                save=False):
+                save=False, show=False, return_svg=False):
     """
     Draw two-dimensional scatterplot of corpus, given the
     coordinates passed.
@@ -31,17 +38,22 @@ def scatterplot(corpus, plot_type='static', nb_clusters=0,
     and `interactive_scatterplot()`.
 
     """
+    if outputfile:
+        outputfile = os.path.expanduser(outputfile)
     if plot_type == 'static':
         return static_scatterplot(corpus, coor, loadings=loadings,
-                                  outputfile=outputfile, nb_clusters=nb_clusters)
+                                  outputfile=outputfile, nb_clusters=nb_clusters,
+                                  save=save, show=show, return_svg=return_svg)
     elif plot_type == 'interactive':
         return interactive_scatterplot(corpus=corpus, coor=coor,
-                                  outputfile=outputfile, nb_clusters=nb_clusters)
+                                  outputfile=outputfile, nb_clusters=nb_clusters,
+                                  save=save, show=show, return_svg=return_svg)
     else:
         raise ValueError('Unsupported plot_type: %s' %(plot_type))
 
 def static_scatterplot(corpus, coor=None, outputfile=None,
-                       nb_clusters=0, loadings=None, save=False):
+                       nb_clusters=0, loadings=None,
+                       save=False, show=False, return_svg=False):
     """
     Draw two-dimensional scatterplot of the corpus, given the
     coordinates passed. Produces a static matplotlib/seaborn
@@ -126,9 +138,15 @@ def static_scatterplot(corpus, coor=None, outputfile=None,
     ax1.set_yticks([])
     if save:
         sns.plt.savefig(outputfile, bbox_inches=0)
+    if show:
+        sns.plt.show()
+    if return_svg:
+        return plt_fig_to_svg(fig)
+
     return
 
-def interactive_scatterplot(corpus=None, coor=None, outputfile=None, nb_clusters=0):
+def interactive_scatterplot(corpus=None, coor=None, outputfile=None, nb_clusters=0,
+                            save=False, show=False, return_svg=False):
     """
     Draw an interactive two-dimensional html-scatterplot
     of the corpus, given the coordinates passed. Uses Bokeh
@@ -199,7 +217,10 @@ def interactive_scatterplot(corpus=None, coor=None, outputfile=None, nb_clusters
         save(p)
 
 
-def scatterplot_3d(corpus, coor, outputfile=std_output_path+'3d.pdf', nb_clusters=0):
+def scatterplot_3d(corpus, coor,
+                  outputfile=std_output_path+'3d.pdf',
+                  nb_clusters=0,
+                  save=False, show=False, return_svg=False):
     """
     Draw a 3-dimensional scatterplot of the corpus, given the
     coordinates passed. Produces a static matplotlib/seaborn
@@ -228,7 +249,7 @@ def scatterplot_3d(corpus, coor, outputfile=std_output_path+'3d.pdf', nb_cluster
     if coor.shape[1] < 3:
         raise ValueError('Only three-dimensional matrices are supported')
     if not outputfile:
-        outputfile = std_output_path+'3d.pdf'
+        outputfile = os.path.expanduser(outputfile)
     
     sns.set_style('white')
     fig = plt.figure()
@@ -255,10 +276,15 @@ def scatterplot_3d(corpus, coor, outputfile=std_output_path+'3d.pdf', nb_cluster
                      fontdict={'family': 'Arial', 'size': 10})
     if save:
         plt.savefig(outputfile, bbox_inches=0)
+    if show:
+        plt.show()
+    if return_svg:
+        return plt_fig_to_svg(fig)
 
 
 def clustermap(corpus, distance_matrix=None, color_leafs=True,
-               outputfile=std_output_path+'clustermap.pdf', fontsize=5):
+               outputfile=std_output_path+'clustermap.pdf', fontsize=5,
+               save=False, show=False, return_svg=False):
     """
     Draw a square clustermap of the corpus using seaborn's
     `clustermap`.
@@ -282,6 +308,7 @@ def clustermap(corpus, distance_matrix=None, color_leafs=True,
         Whether to save the plot to `outputfile`.
 
     """
+    plt.clf()
     # convert to pandas dataframe:
     labels = corpus.titles
     df = pd.DataFrame(data=distance_matrix, columns=labels)
@@ -305,13 +332,18 @@ def clustermap(corpus, distance_matrix=None, color_leafs=True,
         label.set_fontsize(fontsize)
         if color_leafs:
             label.set_color(plt.cm.spectral(corpus.target_ints[-idx-1] / 10.)) # watch out: different indexing both axis
+    if save:
+        cm.savefig(outputfile)
+    if show:
+        sns.plt.show()
+    if return_svg:
+        return plt_fig_to_svg(cm)
+    
 
-    cm.savefig(outputfile)
-    plt.clf()
-
-def scipy_dendrogram(corpus, tree, outputfile=std_output_path+'scipy_dendrogram.pdf',
-                     fontsize=5, color_leafs=True, save=False, show=True,
-                     save=False, return_svg=return_svg):
+def scipy_dendrogram(corpus, tree,
+                     outputfile=std_output_path+'scipy_dendrogram.pdf',
+                     fontsize=5, color_leafs=True,
+                     show=True, save=False, return_svg=True):
     """
     Draw a dendrogram of the texts in the corpus using scipy.
     
@@ -336,7 +368,7 @@ def scipy_dendrogram(corpus, tree, outputfile=std_output_path+'scipy_dendrogram.
                   show=show, return_svg=return_svg)
 
 def ete_dendrogram(corpus, tree, outputfile=std_output_path+'ete_dendrogram.pdf',
-                   fontsize=5, save_newick=True, mode='c',
+                   fontsize=5, save_newick=True, mode='c', show=False,
                    color_leafs=False, save=False, return_svg=True):
     """
     Draw a dendrogram of the texts in the corpus using ETE.
@@ -372,8 +404,8 @@ def ete_dendrogram(corpus, tree, outputfile=std_output_path+'ete_dendrogram.pdf'
     """
     return tree.dendrogram.draw_ete_tree(corpus, outputfile=outputfile,
                    fontsize=fontsize, save_newick=save_newick, mode=mode,
-                   color_leafs=color_leafs, save=save,
-                   return_svg=return_svg)
+                   color_leafs=color_leafs,
+                   save=save, return_svg=return_svg, show=show)
     
 
 
