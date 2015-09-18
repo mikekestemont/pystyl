@@ -96,7 +96,7 @@ class Dendrogram(list):
 
     def draw_scipy_tree(self, corpus, fontsize=5, color_leafs=True,
                         outputfile=std_output_path+'scipy_tree.pdf',
-                        save=False):
+                        save=False, show=True, return_svg=True):
         """
         Draw the dendrogram using plain pylab/scipy/matplotlib.
         """
@@ -137,12 +137,15 @@ class Dendrogram(list):
         sns.plt.subplots_adjust(bottom=0.15)
         if save:
             fig.savefig(outputfile)
+        if show:
+            sns.plt.show()
 
     def draw_ete_tree(self, corpus, fontsize=5,
                       color_leafs=False,
                       save_newick=True, mode='c',
                       outputfile=std_output_path+'ete_tree.pdf',
-                      return_svg=True):
+                      return_svg=True, show=False,
+                      save=False):
         T = to_tree(self.to_linkage_matrix())
         root = Tree()
         root.dist = 0
@@ -198,6 +201,7 @@ class Dendrogram(list):
 
         if save:
             root.render(outputfile, tree_style=ts)
-        
+        if show:
+            root.show(tree_style=ts) 
         if return_svg:
             return root.render("%%return")[0]

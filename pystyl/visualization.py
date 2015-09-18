@@ -310,7 +310,8 @@ def clustermap(corpus, distance_matrix=None, color_leafs=True,
     plt.clf()
 
 def scipy_dendrogram(corpus, tree, outputfile=std_output_path+'scipy_dendrogram.pdf',
-                     fontsize=5, color_leafs=True, save=False):
+                     fontsize=5, color_leafs=True, save=False, show=True,
+                     save=False, return_svg=return_svg):
     """
     Draw a dendrogram of the texts in the corpus using scipy.
     
@@ -331,7 +332,8 @@ def scipy_dendrogram(corpus, tree, outputfile=std_output_path+'scipy_dendrogram.
 
     """
     return tree.dendrogram.draw_scipy_tree(corpus, outputfile=outputfile,
-                  fontsize=fontsize, color_leafs=color_leafs, save=save)
+                  fontsize=fontsize, color_leafs=color_leafs, save=save,
+                  show=show, return_svg=return_svg)
 
 def ete_dendrogram(corpus, tree, outputfile=std_output_path+'ete_dendrogram.pdf',
                    fontsize=5, save_newick=True, mode='c',
