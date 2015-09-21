@@ -324,8 +324,10 @@ def clustermap(corpus, distance_matrix=None, color_leafs=True,
         label.set_fontname('Arial')
         label.set_fontsize(fontsize)
         if color_leafs:
-            label.set_color(plt.cm.spectral(corpus.target_ints[-idx-1] / 10.)) # watch out: different indexing both axis
+            label.set_color(plt.cm.spectral(corpus.target_ints[-idx-1] / 10.)) # watch out: different indexing on this axis
     if save:
+        if outputfile:
+            outputfile = os.path.expanduser(outputfile)
         cm.savefig(outputfile)
     if show:
         sns.plt.show()
@@ -333,7 +335,7 @@ def clustermap(corpus, distance_matrix=None, color_leafs=True,
         return plt_fig_to_svg(cm)
     
 
-def scipy_dendrogram(corpus, tree, outputfile,
+def scipy_dendrogram(corpus, tree, outputfile=None,
                      fontsize=5, color_leafs=True,
                      show=True, save=False, return_svg=True):
     """
@@ -359,7 +361,7 @@ def scipy_dendrogram(corpus, tree, outputfile,
                   fontsize=fontsize, color_leafs=color_leafs, save=save,
                   show=show, return_svg=return_svg)
 
-def ete_dendrogram(corpus, tree, outputfile,
+def ete_dendrogram(corpus, tree, outputfile=None,
                    fontsize=5, save_newick=True, mode='c', show=False,
                    color_leafs=False, save=False, return_svg=True):
     """

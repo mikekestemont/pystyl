@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
+import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from sklearn.metrics.pairwise import pairwise_distances
+from dendropy.interop.ete import as_dendropy_object, as_ete_object
 
 from . distance_metrics import minmax
 from . clustering.cluster import VNClusterer, Clusterer
@@ -82,7 +84,7 @@ def tsne(corpus, nb_dimensions=2):
     except AttributeError:
         return tsne.fit_transform(X) # input already sparse
 
-def distance_matrix(corpus, metric='manhattan'):
+def distance_matrix(corpus=None, X=None, metric='manhattan'):
     """
     Calculate a square distance matrix for
     all the texts in the corpus.
@@ -123,14 +125,15 @@ def distance_matrix(corpus, metric='manhattan'):
 
     # we unsparsify here to make it easier for contributors
     # to add distance functions (in `pystyl.distance_metrics.py`).
-    try:
-        X = corpus.vectorizer.X
+    if corpus:     
         try:
-            X = X.toarray()
+            X = corpus.vectorizer.X
+            try:
+                X = X.toarray()
+            except AttributeError:
+                pass
         except AttributeError:
-            pass
-    except AttributeError:
-        ValueError('Your corpus does not seem to have been vectorized yet.')
+            ValueError('Your corpus does not seem to have been vectorized yet.')
 
     if metric == 'minmax':
         return pairwise_distances(X, metric=minmax)
@@ -191,5 +194,31 @@ def vnc_clustering(distance_matrix, linkage):
     """
     tree = VNClusterer(distance_matrix, linkage=linkage)
     tree.cluster(verbose=0)
+    return tree
+
+def bootstrapped_distance_matrices(corpus, n_iter=100, random_prop=0.50,
+              metric='manhattan', random_state=1985):
+    dms = []
+    try:
+        X = corpus.vectorizer.X
+        try:
+            X = X.toarray()
+        except AttributeError:
+            pass
+    except AttributeError:
+        ValueError('Your corpus does not seem to have been vectorized yet.')
+    full_size = X.shape[1]
+    bootstrap_size = int(full_size*float(random_prop))
+    # set random state for replicability:
+    np.random.seed(random_state)
+    for i in range(n_iter):
+        rnd_indices = np.random.randint(low=0, high=full_size, size=bootstrap_size)
+        bootstrap_matrix = X[:,rnd_indices]
+        dms.append(distance_matrix(X=X, metric=metric))
+    return dms
+
+def consensus_tree(trees, consensus_level=0.5):
+    tree = None
+    trees = [as_dendropy_object(to_ete(tree)) for tree in trees]
     return tree
 

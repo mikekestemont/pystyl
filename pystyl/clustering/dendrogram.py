@@ -142,12 +142,7 @@ class Dendrogram(list):
         if return_svg:
             return plt_fig_to_svg(fig)
 
-    def draw_ete_tree(self, corpus, fontsize=5,
-                      color_leafs=False,
-                      save_newick=True, mode='c',
-                      outputfile=None,
-                      return_svg=True, show=False,
-                      save=False):
+    def to_ete(self):
         T = to_tree(self.to_linkage_matrix())
         root = Tree()
         root.dist = 0
@@ -165,6 +160,16 @@ class Dendrogram(list):
                     item2node[node].add_child(ch)
                     item2node[ch_node] = ch
                     to_visit.append(ch_node)
+        return root
+
+
+    def draw_ete_tree(self, corpus, fontsize=5,
+                      color_leafs=False,
+                      save_newick=True, mode='c',
+                      outputfile=None,
+                      return_svg=True, show=False,
+                      save=False):
+        root = self.to_ete()
         labels = corpus.titles
         if labels != None:
             for leaf in root.get_leaves():
