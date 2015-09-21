@@ -276,7 +276,7 @@ def scatterplot_3d(corpus, coor, outputfile,
 
 
 def clustermap(corpus, distance_matrix=None, color_leafs=True,
-               outputfile=None,
+               outputfile=None, fontsize=5,
                save=False, show=False, return_svg=False):
     """
     Draw a square clustermap of the corpus using seaborn's
