@@ -6,6 +6,7 @@ import os
 import codecs
 import glob
 from operator import itemgetter
+from pkg_resources import resource_string
 import sys
 if sys.version_info[0] == 2:
     import cPickle as pickle
@@ -266,8 +267,10 @@ class Corpus:
                 raise ValueError('No language set for corpus (cf. pronouns)')
             if self.language not in ('en', 'nl'):
                 raise ValueError('No pronouns available for: %s' %(self.language))
-            pronoun_path = os.path.dirname(os.path.abspath(__file__))+'/pronouns/'
-            pronouns = {w.strip() for w in open(pronoun_path+self.language+'.txt') if not w.startswith('#')}
+            pronouns = {w.strip() for w in \
+                            resource_string(__name__,
+                                'pronouns/'+self.language+'.txt')\
+                            if not w.startswith('#')}
         else:
             pronouns = set()
 
