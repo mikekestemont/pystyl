@@ -2,6 +2,7 @@
 from __future__ import print_function
 
 import os
+import sys
 import StringIO
 
 from sklearn.cluster import AgglomerativeClustering
@@ -11,6 +12,11 @@ from mpl_toolkits.mplot3d import Axes3D
 import pandas as pd
 from bokeh.models import HoverTool, ColumnDataSource, Axis
 from bokeh.plotting import figure, show, output_file, save
+
+if sys.version_info[0] == 2:
+    from ete2 import Tree, faces, AttrFace, TreeStyle, NodeStyle, TextFace, Face
+elif sys.version_info[0] == 3:
+    from ete3 import Tree, faces, AttrFace, TreeStyle, NodeStyle, TextFace, Face
 
 def plt_fig_to_svg(fig):
     imgdata = StringIO.StringIO()
@@ -400,6 +406,86 @@ def ete_dendrogram(corpus, tree, outputfile=None,
                    fontsize=fontsize, save_newick=save_newick, mode=mode,
                    color_leafs=color_leafs,
                    save=save, return_svg=return_svg, show=show)
+
+def bct_dendrogram(corpus, tree, outputfile=None,
+                   fontsize=5, save_newick=True, mode='c', show=False,
+                   color_leafs=False, save=False, return_svg=True):
+    """
+    Draw a dendrogram of the texts in the corpus using ETE.
     
+    Parameters
+    ----------
+    corpus : `Corpus` instance
+        The corpus to be plotted.
+    tree : `(VN)Clusterer` object
+        The clusterer object which was
+        applied to the corpus.
+    outputfile : str
+        The path where the plot should be saved.
+    color_leafs: boolean, default=True,
+        If true, will color the text labels
+        according to their category.
+    fontsize : int, default=5
+        The fontsize of the labels on the axes.
+    save_newick : boolean, default=True
+        Whether to dump a representation of the
+        tree in newick-format, which can later
+        be modified using software like FigTree:
+        http://tree.bio.ed.ac.uk/software/figtree/
+    mode : str, default='c'
+        The type of tree to be drawn. Supports:
+        - 'c': circular dendrogram
+        - 'r': traditional, rectangular dendrogram
+    save : boolean, default=False
+        Whether to save the plot to `outputfile`.
+    return_svg : boolean, default=True
+        Whether to return the plot in SVG-format.
+        Useful for the GUI.
+    """
+
+    for leaf in tree.get_leaves():
+        leaf.name = leaf.name.replace("'", '')
+    
+    def layout(node):
+        if node.is_leaf():
+            N = AttrFace("name", fsize=7)
+            faces.add_face_to_node(faces.AttrFace("name","Arial",10, None), node, 0, position='branch-right')
+            # problems: aligment of labels to branch, left padding of labels
+
+    ts = TreeStyle()
+    ts.mode = mode
+    ts.show_leaf_name = False
+    ts.scale = 120
+    ts.show_scale = False
+    ts.branch_vertical_margin = 10
+
+    nstyle = NodeStyle()
+    nstyle["fgcolor"] = "#0f0f0f"
+    nstyle["size"] = 0
+    nstyle["vt_line_color"] = "#0f0f0f"
+    nstyle["hz_line_color"] = "#0f0f0f"
+    nstyle["vt_line_width"] = 1
+    nstyle["hz_line_width"] = 1
+    nstyle["vt_line_type"] = 0
+    nstyle["hz_line_type"] = 0
+
+    for n in tree.traverse():
+       n.set_style(nstyle)
+        
+    ts.layout_fn = layout
+
+    if outputfile:
+        outputfile = os.path.expanduser(outputfile)
+
+    if save_newick: # save tree in newick format for later manipulation in e.g. FigTree:
+        tree.write(outfile=os.path.splitext(outputfile)[0]+'.newick')
+
+    if save:
+        tree.render(outputfile, tree_style=ts)
+    if show:
+        tree.show(tree_style=ts) 
+    if return_svg: # return the SVG as a string
+        return tree.render("%%return")[0]
+        
 
 

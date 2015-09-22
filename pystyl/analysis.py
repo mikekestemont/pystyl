@@ -1,11 +1,22 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
+import os
+import glob
+import sys
+from tempfile import mkdtemp
+
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from sklearn.metrics.pairwise import pairwise_distances
-from dendropy.interop.ete import as_dendropy_object, as_ete_object
+import dendropy
+from dendropy.calculate.treesum import TreeSummarizer
+
+if sys.version_info[0] == 2:
+    from ete2 import Tree as EteTree
+elif sys.version_info[0] == 3:
+    from ete3 import Tree as EteTree
 
 from . distance_metrics import minmax
 from . clustering.cluster import VNClusterer, Clusterer
@@ -214,11 +225,37 @@ def bootstrapped_distance_matrices(corpus, n_iter=100, random_prop=0.50,
     for i in range(n_iter):
         rnd_indices = np.random.randint(low=0, high=full_size, size=bootstrap_size)
         bootstrap_matrix = X[:,rnd_indices]
-        dms.append(distance_matrix(X=X, metric=metric))
+        dms.append(distance_matrix(X=bootstrap_matrix, metric=metric))
     return dms
 
-def consensus_tree(trees, consensus_level=0.5):
-    tree = None
-    trees = [as_dendropy_object(to_ete(tree)) for tree in trees]
-    return tree
+def bootstrap_consensus_tree(corpus, trees=[], consensus_level=0.5):
+    tmp_dir = mkdtemp()
+    for idx, tree in enumerate(trees):
+        t = tree.dendrogram.to_ete(labels=corpus.titles)
+        t.write(outfile=tmp_dir+'/tree_'+str(idx)+'.newick')
+    trees = []
+    tns = dendropy.TaxonNamespace(corpus.titles, label="label")
+    for filename in glob.glob(tmp_dir+'/*.newick'):
+        tree = dendropy.Tree.get(path=filename,
+                                 schema='newick',
+                                 preserve_underscores=True,
+                                 taxon_namespace=tns)
+        trees.append(tree)
+    
+    tsum = TreeSummarizer(support_as_labels=True,
+                          support_as_edge_lengths=False,
+                          support_as_percentages = True,
+                          add_node_metadata = True,
+                          weighted_splits = True)
+    taxon_namespace = trees[0].taxon_namespace
+    split_distribution = dendropy.SplitDistribution(taxon_namespace=taxon_namespace)
+    tsum.count_splits_on_trees(trees,
+                               split_distribution=split_distribution,
+                               is_bipartitions_updated=False)
+    tree = tsum.tree_from_splits(split_distribution,
+                               min_freq=consensus_level,
+                               rooted=False,
+                               include_edge_lengths=False) # this param is crucial
+    ete_tree = EteTree(tree.as_string("newick").replace('[&U] ', '')+';')
+    return ete_tree
 
