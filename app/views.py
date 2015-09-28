@@ -10,8 +10,7 @@ def index():
 
 @app.route('/processResults', methods=["POST"])
 def processResults():
-    print flask.request.method
     if flask.request.method == 'POST':
-        data = flask.request.json
+        data = flask.request.get_json()
+        print(data)
         return json.dumps({"message": get_example_tree()})
-    # return flask.redirect("index")

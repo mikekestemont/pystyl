@@ -2,184 +2,176 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- add pystyl specific javascript -->
 <script src="{{url_for('.static', filename='js/pystyl.js')}}" type="text/javascript"></script>
 
-    <div class="row-fluid">
-        <div class="col-sm-6"> <!-- begin of left panel -->
-
-            <div class="form-group">&nbsp;</div> <!-- begin of tab menu -->
-            <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
-                <li class="active"><a href="#import" data-toggle="tab">Import</a></li>
-                <li><a href="#preprocess" data-toggle="tab">Preprocess</a></li>
-                <li><a href="#features" data-toggle="tab">Features</a></li>
-                <li><a href="#visualize" data-toggle="tab">Visualize</a></li>
-            </ul>
-        <div id="my-tab-content" class="tab-content">
+<div class="row-fluid"> <!-- begin of two-column panel -->
+    <div class="col-sm-6"> <!-- begin of left panel -->
+        
+        <div class="form-group">&nbsp;</div> <!-- just add some vertical space -->
+        
+        <ul id="tabs" class="nav nav-tabs" data-tabs="tabs"> <!-- begin of tab menu in left panel -->
+            <li class="active"><a href="#import" data-toggle="tab">Import</a></li>
+            <li><a href="#preprocess" data-toggle="tab">Preprocess</a></li>
+            <li><a href="#features" data-toggle="tab">Features</a></li>
+            <li><a href="#visualize" data-toggle="tab">Visualize</a></li>
+        </ul>
+        <div id="my-tab-content" class="tab-content"> <!-- begin tab content -->
             <div class="tab-pane active" id="import"> <!-- begin import tab -->
-
-                <form class="form-horizontal" id="settings">
-                    <div class="form-group">&nbsp;</div>
+                <form class="form-horizontal">
+                    <div class="form-group">&nbsp;</div> <!-- just add some vertical space -->
                     <label for="inputEmail3" class="col-sm-3 control-label">Select language</label>
-                            <div class="col-sm-8">
-                                <div class="btn-group" role="group" aria-label="...">
-                                    <button type="button" class="btn btn-default">English</button>
-                                    <button type="button" class="btn btn-default">Dutch</button>
-                                    <button type="button" class="btn btn-default">Other</button>
-                                </div>
-                            </div>
-
-                            <div class="form-group">&nbsp;</div>
-
-                            <div class="form-group">
-                                <label for="inputEmail3" class="col-sm-3 control-label">Select language</label>
-                                <div class="col-sm-8">
-                                    <span class="btn btn-file"><input type="file" /></span>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="inputEmail3" class="col-sm-3 control-label">File extension</label>
-                                <div class="col-sm-8">
-                                    <input type="text" class="form-control" id="extension" value="txt">
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label">Remove non-alpha</label>
-                                <div class="col-sm-8">
-                                    <input type="checkbox">
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label">Lowercase</label>
-                                <div class="col-sm-8">
-                                    <input type="checkbox">
-                                </div>
-                            </div>
-
-                        </form>
+                    <div class="col-sm-8">
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="button" class="btn btn-default">English</button>
+                            <button type="button" class="btn btn-default">Dutch</button>
+                            <button type="button" class="btn btn-default">Other</button>
+                        </div>
                     </div>
 
-                    <div class="tab-pane" id="preprocess">
-                        <form class="form-horizontal">
-                          <div class="form-group">&nbsp;</div>
-                          <div class="form-group">
-                              <label for="inputEmail3" class="col-sm-3 control-label">Minimum size</label>
-                              <div class="col-sm-8">
-                                <input type="text" class="form-control" id="min_size" value="2500">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="max_size" class="col-sm-3 control-label">Maximum size</label>
-                            <div class="col-sm-8">
-                              <input type="text" class="form-control" id="max_size" value="0">
-                          </div>
-                      </div>
-                      <div class="form-group">
-                          <label for="inputEmail3" class="col-sm-3 control-label">Segment size</label>
-                          <div class="col-sm-8">
-                            <input type="text" class="form-control" id="segment_size" value="0">
+                    <div class="form-group">&nbsp;</div>
+
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-3 control-label">Select language</label>
+                        <div class="col-sm-8">
+                            <span class="btn btn-file"><input type="file"/></span>
                         </div>
                     </div>
 
                     <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-3 control-label">File extension</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" value="txt" id="import-settings" name='importxsettings'>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Remove non-alpha</label>
+                        <div class="col-sm-8">
+                            <input type="checkbox">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Lowercase</label>
+                        <div class="col-sm-8">
+                            <input type="checkbox">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="tab-pane" id="preprocess">
+                <form class="form-horizontal">
+                    <div class="form-group">&nbsp;</div>
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-3 control-label">Minimum size</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="min_size" value="2500">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="max_size" class="col-sm-3 control-label">Maximum size</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="max_size" value="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-3 control-label">Segment size</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="segment_size" value="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label for="inputPassword3" class="col-sm-3 control-label">Step size</label>
                         <div class="col-sm-8">
-                          <input type="text" class="form-control" id="step_size" value="0">
-                      </div>
-                  </div>
+                            <input type="text" class="form-control" id="step_size" value="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Remove pronouns</label>
+                        <div class="col-sm-8">
+                            <input type="checkbox">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="comment" class="col-sm-3 control-label">Remove these items too (each item on a separate line):</label>
+                        <div class="col-sm-8">
+                            <textarea class="form-control" rows="5" id="comment"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
 
-                  <div class="form-group">
-                    <label class="col-sm-3 control-label">Remove pronouns</label>
+            <div class="tab-pane" id="features">
+                <form class="form-horizontal">
+                    <div class="form-group">&nbsp;</div>
+                    <label for="xxx" class="col-sm-3 control-label">Vector space</label>
                     <div class="col-sm-8">
-                      <input type="checkbox">
-                  </div>
-              </div>
-
-              <div class="form-group">
-                <label for="comment" class="col-sm-3 control-label">Remove these items too (each item on a separate line):</label>
-                <div class="col-sm-8">
-                  <textarea class="form-control" rows="5" id="comment"></textarea>
-              </div>
-          </div>
-
-      </form>
-    </div>
-
-  <div class="tab-pane" id="features">
-    <form class="form-horizontal">
-        <div class="form-group">&nbsp;</div>
-        <label for="xxx" class="col-sm-3 control-label">Vector space</label>
-        <div class="col-sm-8">
-            <div id='ttt' class="btn-group" role="group" aria-label="...">
-                <button type="button" class="btn btn-default">Tf</button>
-                <button type="button" class="btn btn-default">Scaled</button>
-                <button type="button" class="btn btn-default">TfIdf</button>
-                <button type="button" class="btn btn-default">Std</button>
+                        <div id='ttt' class="btn-group" role="group" aria-label="...">
+                            <button type="button" class="btn btn-default">Tf</button>
+                            <button type="button" class="btn btn-default">Scaled</button>
+                            <button type="button" class="btn btn-default">TfIdf</button>
+                            <button type="button" class="btn btn-default">Std</button>
+                        </div>
+                    </div>
+                    <div class="form-group">&nbsp;</div>
+                    <label for="xxx" class="col-sm-3 control-label">Type</label>
+                    <div class="col-sm-8">
+                        <div id='rrr' class="btn-group" role="group" aria-label="...">
+                            <button type="button" class="btn btn-default">Words</button>
+                            <button type="button" class="btn btn-default">Characters</button>
+                            <button type="button" class="btn btn-default">Characters (in words)</button>
+                        </div>
+                    </div>
+                    <div class="form-group">&nbsp;</div>
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-3 control-label">Ngram size</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="ngram_size" value="1">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-3 control-label">MFI</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="ngram_size" value="100">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-3 control-label">Minimum DF</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="ngram_size" value="0.0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-3 control-label">Maximum DF</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="ngram_size" value="0.90">
+                        </div>
+                    </div>
+                </form>
             </div>
-        </div>
 
-        <div class="form-group">&nbsp;</div>
-        <label for="xxx" class="col-sm-3 control-label">Type</label>
-        <div class="col-sm-8">
-            <div id='rrr' class="btn-group" role="group" aria-label="...">
-                <button type="button" class="btn btn-default">Words</button>
-                <button type="button" class="btn btn-default">Characters</button>
-                <button type="button" class="btn btn-default">Characters (in words)</button>
+            <div class="tab-pane" id="visualize">
+                <h1>Visualize</h1>
+                <p>yellow yellow yellow yellow yellow</p>
             </div>
+
         </div>
 
-        <div class="form-group">&nbsp;</div>
-        <div class="form-group">
-          <label for="inputEmail3" class="col-sm-3 control-label">Ngram size</label>
-          <div class="col-sm-8">
-            <input type="text" class="form-control" id="ngram_size" value="1">
+        <div class='text-center'>
+            <button type="button" id="maakresultaten" class="btn btn-default">
+                <span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span> visualize
+            </button>
         </div>
-    </div>
+    </div> <!-- end of left panel -->
 
-    <div class="form-group">
-      <label for="inputEmail3" class="col-sm-3 control-label">MFI</label>
-      <div class="col-sm-8">
-        <input type="text" class="form-control" id="ngram_size" value="100">
-    </div>
-</div>
-<div class="form-group">
-  <label for="inputEmail3" class="col-sm-3 control-label">Minimum DF</label>
-  <div class="col-sm-8">
-    <input type="text" class="form-control" id="ngram_size" value="0.0">
-</div>
-</div>
-<div class="form-group">
-  <label for="inputEmail3" class="col-sm-3 control-label">Maximum DF</label>
-  <div class="col-sm-8">
-    <input type="text" class="form-control" id="ngram_size" value="0.90">
-</div>
-</div>
-</form>
-</div>
-
-<div class="tab-pane" id="visualize">
-    <h1>Visualize</h1>
-    <p>yellow yellow yellow yellow yellow</p>
-</div>
+    <div class="col-sm-6"> <!-- begin of right panel -->
+        <h4>output</h4>
+        <div id="image-output"></div>
+        <p> test</p>
+    </div> <!-- end of right panel -->
 
 </div>
 
-<div class='text-center'>
-<button type="button" id="maakresultaten" class="btn btn-default">
-  <span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span> visualize
-</button>
-</div>
-
-</div>
-
-
-        </div> <!-- end of left panel -->
-        <div class="col-sm-6"> <!-- begin of right panel -->
-            <h4>output</h4>
-            <div id="image-output"></div>
-            <p> test</p>
-        </div> <!-- end of right panel -->
-    </div>
 {% endblock %}

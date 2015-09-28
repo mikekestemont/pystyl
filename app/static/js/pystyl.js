@@ -1,5 +1,5 @@
 function process() {
-    var data = $('#settings').serializeArray();
+    var data = $('#import-settings').serializeArray();
     console.log(data);
 
     $.ajax({
@@ -20,3 +20,7 @@ $(document).ready(function() {
        process();
     });
 });
+
+
+
+
