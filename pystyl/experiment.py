@@ -8,12 +8,12 @@ class Experiment:
     with a workflow similar to that in Stylometry with R.
     """
 
-    def __init__(self):
+    def __init__(self, mode='GUI'):
         """
-        Lightweight constructor which only sets
-        an empty Corpus.
+        Lightweight constructor
         """
         self.corpus = Corpus()
+        self.mode = mode
 
     def import_data(self, directory, alpha_only, lowercase):
         self.corpus.add_directory(directory=directory)
@@ -41,11 +41,17 @@ class Experiment:
 
     def visualize(self, outputfile):
         pca_coor, pca_loadings = pca(self.corpus)
+        save, return_svg = False, False
+        if self.mode == 'CMD_LINE':
+            save = True
+        if self.mode == 'GUI':
+            return_svg = True
         scatterplot(self.corpus,
                     coor=pca_coor,
                     loadings=pca_loadings,
                     outputfile=outputfile,
-                    save=True)
+                    save=save,
+                    return_svg=return_svg)
 
 
 

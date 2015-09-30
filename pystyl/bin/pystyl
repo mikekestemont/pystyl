@@ -15,8 +15,9 @@ config_path = os.path.expanduser(sys.argv[1])
 config = ConfigParser.ConfigParser()
 config.read(config_path)
 
-# instantiate the corpus:
-e = Experiment()
+# instantiate the corpus, and
+# indicate it's a command line experiment:
+e = Experiment(mode='CMD_LINE')
 
 # load data:
 e.import_data(directory=config.get('import', 'input_dir'),
