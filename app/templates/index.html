@@ -16,6 +16,7 @@
             <li><a href="#features" data-toggle="tab">Features</a></li>
             <li><a href="#visualize" data-toggle="tab">Visualize</a></li>
         </ul>
+
         <div id="my-tab-content" class="tab-content"> <!-- begin tab content -->
             <div class="tab-pane active" id="import"> <!-- begin import tab -->
                 <form class="form-horizontal">
@@ -41,7 +42,7 @@
                     <div class="form-group">
                         <label for="inputEmail3" class="col-sm-3 control-label">File extension</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" value="txt" id="import-settings" name='importxsettings'>
+                            <input type="text" class="form-control" value="txt"   id="import-settings" name='importxsettings'>
                         </div>
                     </div>
 
@@ -59,7 +60,12 @@
                         </div>
                     </div>
                 </form>
-            </div>
+                <div class='text-center'>
+                    <button type="button" id="import-btn" class="btn btn-default">
+                        <span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span> import
+                    </button>
+                </div>
+            </div> <!-- end of import tab -->
 
             <div class="tab-pane" id="preprocess">
                 <form class="form-horizontal">
@@ -101,7 +107,12 @@
                         </div>
                     </div>
                 </form>
-            </div>
+                <div class='text-center'>
+                    <button type="button" id="preprocess-btn" class="btn btn-default">
+                        <span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span> preprocess
+                    </button>
+                </div>
+            </div> <!-- end of preprocess tab -->
 
             <div class="tab-pane" id="features">
                 <form class="form-horizontal">
@@ -150,20 +161,26 @@
                         </div>
                     </div>
                 </form>
-            </div>
+                <div class='text-center'>
+                    <button type="button" id="features-btn" class="btn btn-default">
+                        <span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span> featurize
+                    </button>
+                </div>
+            </div> <!-- end of features tab -->
 
             <div class="tab-pane" id="visualize">
                 <h1>Visualize</h1>
                 <p>yellow yellow yellow yellow yellow</p>
-            </div>
+                <div class='text-center'>
+                    <button type="button" id="visualize-btn" class="btn btn-default">
+                        <span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span> visualize
+                    </button>
+                </div>
+            </div> <!-- end of visualisation tab-->
 
         </div>
 
-        <div class='text-center'>
-            <button type="button" id="maakresultaten" class="btn btn-default">
-                <span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span> visualize
-            </button>
-        </div>
+
     </div> <!-- end of left panel -->
 
     <div class="col-sm-6"> <!-- begin of right panel -->
