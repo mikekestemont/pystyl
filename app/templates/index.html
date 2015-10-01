@@ -24,7 +24,7 @@
                     <div class="form-group">
                         <label for="inputEmail3" class="col-sm-3 control-label">Input files</label>
                         <div class="col-sm-8">
-                            <span class="btn btn-file"><input type="file" id="files-id" name='files-name'/></span>
+                            <span class="btn btn-file"><input type="file" id="files-id" name='files-name' multiple/></span>
                         </div>
                     </div>
 
@@ -51,7 +51,7 @@
                 </form>
                 <div class='text-center'>
                     <button type="button" id="import-btn" class="btn btn-default">
-                        <span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span> import
+                        <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span> import
                     </button>
                 </div>
             </div> <!-- end of import tab -->
@@ -59,14 +59,16 @@
             <div class="tab-pane" id="preprocess">
                 <form class="form-horizontal" id="preprocessing-settings-id" name='preprocessing-settings-name'>
                     <div class="form-group">&nbsp;</div>
-                        <label for="inputEmail3" class="col-sm-3 control-label">Select language</label>
-                        <div class="col-sm-8">
-                            <div class="btn-group" role="group" aria-label="..." id="language-id" name='language-name'>
-                                <button type="button" class="btn btn-default">English</button>
-                                <button type="button" class="btn btn-default">Dutch</button>
-                                <button type="button" class="btn btn-default">Other</button>
-                            </div>
+                    <label class="col-sm-3 control-label">Select language</label>
+                    <div class="col-sm-8">
+                        <div class="form-group">
+                            <select class="form-control" id="language-id" name='language-name'>
+                                <option>English</option>
+                                <option>Dutch</option>
+                                <option>Other</option>
+                            </select>
                         </div>
+                    </div>
                     <div class="form-group">&nbsp;</div>
                     <div class="form-group">
                         <label for="inputEmail3" class="col-sm-3 control-label">Minimum size</label>
@@ -107,7 +109,7 @@
                 </form>
                 <div class='text-center'>
                     <button type="button" id="preprocess-btn" class="btn btn-default">
-                        <span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span> preprocess
+                        <span class="glyphicon glyphicon-signal" aria-hidden="true"></span> preprocess
                     </button>
                 </div>
             </div> <!-- end of preprocess tab -->
@@ -115,22 +117,26 @@
             <div class="tab-pane" id="features">
                 <form class="form-horizontal" id="features-settings-id" name='features-settings-name'>
                     <div class="form-group">&nbsp;</div>
-                    <label for="xxx" class="col-sm-3 control-label">Vector space</label>
+                    <label class="col-sm-3 control-label">Vector space</label>
                     <div class="col-sm-8">
-                        <div id='ttt' class="btn-group" role="group" aria-label="...">
-                            <button type="button" class="btn btn-default">Tf</button>
-                            <button type="button" class="btn btn-default">Scaled</button>
-                            <button type="button" class="btn btn-default">TfIdf</button>
-                            <button type="button" class="btn btn-default">Std</button>
+                        <div class="form-group">
+                            <select class="form-control" id="vector-space-id" name='vector-space-name'>
+                                <option>Tf</option>
+                                <option>Scaled</option>
+                                <option>Std</option>
+                                <option>TfIdf</option>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group">&nbsp;</div>
-                    <label for="xxx" class="col-sm-3 control-label">Type</label>
+                    <label class="col-sm-3 control-label">Feature type</label>
                     <div class="col-sm-8">
-                        <div id='rrr' class="btn-group" role="group" aria-label="...">
-                            <button type="button" class="btn btn-default">Words</button>
-                            <button type="button" class="btn btn-default">Characters</button>
-                            <button type="button" class="btn btn-default">Characters (in words)</button>
+                        <div class="form-group">
+                            <select class="form-control" id="feature-type-id" name='feature-type-name'>
+                                <option>Words</option>
+                                <option>Characters</option>
+                                <option>Characters (in words)</option>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group">&nbsp;</div>
@@ -161,7 +167,7 @@
                 </form>
                 <div class='text-center'>
                     <button type="button" id="features-btn" class="btn btn-default">
-                        <span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span> featurize
+                        <span class="glyphicon glyphicon-scale" aria-hidden="true"></span> featurize
                     </button>
                 </div>
             </div> <!-- end of features tab -->
@@ -184,7 +190,6 @@
     <div class="col-sm-6"> <!-- begin of right panel -->
         <h4>output</h4>
         <div id="image-output"></div>
-        <p> test</p>
     </div> <!-- end of right panel -->
 
 </div>
