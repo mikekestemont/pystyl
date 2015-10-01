@@ -1,6 +1,6 @@
 $(document).ready(function() {
     $("#import-btn").click(function() {
-        var data = $('#import-settings').serializeArray();
+        var data = $('#import-settings-id').serializeArray();
         console.log(data);
 
         $.ajax({
@@ -17,7 +17,7 @@ $(document).ready(function() {
     });
 
     $("#preprocess-btn").click(function() {
-        var data = $('#import-settings').serializeArray();
+        var data = $('#preprocessing-settings-id').serializeArray();
         console.log(data);
 
         $.ajax({
@@ -34,7 +34,7 @@ $(document).ready(function() {
     });
 
     $("#features-btn").click(function() {
-        var data = $('#import-settings').serializeArray();
+        var data = $('#features-settings-id').serializeArray();
         console.log(data);
 
         $.ajax({
@@ -51,7 +51,7 @@ $(document).ready(function() {
     });
 
     $("#visualize-btn").click(function() {
-        var data = $('#import-settings').serializeArray();
+        var data = $('#visualization-settings-id').serializeArray();
         console.log(data);
 
         $.ajax({

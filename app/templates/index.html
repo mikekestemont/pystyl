@@ -19,44 +19,33 @@
 
         <div id="my-tab-content" class="tab-content"> <!-- begin tab content -->
             <div class="tab-pane active" id="import"> <!-- begin import tab -->
-                <form class="form-horizontal">
+                <form class="form-horizontal" id="import-settings-id" name='import-settings-name'>
                     <div class="form-group">&nbsp;</div> <!-- just add some vertical space -->
-                    <label for="inputEmail3" class="col-sm-3 control-label">Select language</label>
-                    <div class="col-sm-8">
-                        <div class="btn-group" role="group" aria-label="...">
-                            <button type="button" class="btn btn-default">English</button>
-                            <button type="button" class="btn btn-default">Dutch</button>
-                            <button type="button" class="btn btn-default">Other</button>
-                        </div>
-                    </div>
-
-                    <div class="form-group">&nbsp;</div>
-
                     <div class="form-group">
-                        <label for="inputEmail3" class="col-sm-3 control-label">Select language</label>
+                        <label for="inputEmail3" class="col-sm-3 control-label">Input files</label>
                         <div class="col-sm-8">
-                            <span class="btn btn-file"><input type="file"/></span>
+                            <span class="btn btn-file"><input type="file" id="files-id" name='files-name'/></span>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="inputEmail3" class="col-sm-3 control-label">File extension</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" value="txt"   id="import-settings" name='importxsettings'>
+                            <input type="text" class="form-control" value="txt" id="extension-id" name='extension-name'>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Remove non-alpha</label>
                         <div class="col-sm-8">
-                            <input type="checkbox">
+                            <input type="checkbox" id="remove-alpha-id" name='remove-alpha-name'>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Lowercase</label>
                         <div class="col-sm-8">
-                            <input type="checkbox">
+                            <input type="checkbox" id="lowercase-id" name='lowercase-name'>
                         </div>
                     </div>
                 </form>
@@ -68,42 +57,51 @@
             </div> <!-- end of import tab -->
 
             <div class="tab-pane" id="preprocess">
-                <form class="form-horizontal">
+                <form class="form-horizontal" id="preprocessing-settings-id" name='preprocessing-settings-name'>
+                    <div class="form-group">&nbsp;</div>
+                        <label for="inputEmail3" class="col-sm-3 control-label">Select language</label>
+                        <div class="col-sm-8">
+                            <div class="btn-group" role="group" aria-label="..." id="language-id" name='language-name'>
+                                <button type="button" class="btn btn-default">English</button>
+                                <button type="button" class="btn btn-default">Dutch</button>
+                                <button type="button" class="btn btn-default">Other</button>
+                            </div>
+                        </div>
                     <div class="form-group">&nbsp;</div>
                     <div class="form-group">
                         <label for="inputEmail3" class="col-sm-3 control-label">Minimum size</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" id="min_size" value="2500">
+                            <input type="text" class="form-control" value="2500" id="min-size-id" name='min-size-name'>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="max_size" class="col-sm-3 control-label">Maximum size</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" id="max_size" value="0">
+                            <input type="text" class="form-control" value="0" id="max-size-id" name='max-size-name'>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="inputEmail3" class="col-sm-3 control-label">Segment size</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" id="segment_size" value="0">
+                            <input type="text" class="form-control" value="0" id="segment-size-id" name='segment-size-name'>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="inputPassword3" class="col-sm-3 control-label">Step size</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" id="step_size" value="0">
+                            <input type="text" class="form-control" value="0" id="step-size-id" name='step-size-name'>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Remove pronouns</label>
                         <div class="col-sm-8">
-                            <input type="checkbox">
+                            <input type="checkbox" id="remove-pronouns-id" name='remove-pronouns-name'>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="comment" class="col-sm-3 control-label">Remove these items too (each item on a separate line):</label>
                         <div class="col-sm-8">
-                            <textarea class="form-control" rows="5" id="comment"></textarea>
+                            <textarea class="form-control" rows="5" id="comment" id="remove-items-id" name='remove-items-name'></textarea>
                         </div>
                     </div>
                 </form>
@@ -115,7 +113,7 @@
             </div> <!-- end of preprocess tab -->
 
             <div class="tab-pane" id="features">
-                <form class="form-horizontal">
+                <form class="form-horizontal" id="features-settings-id" name='features-settings-name'>
                     <div class="form-group">&nbsp;</div>
                     <label for="xxx" class="col-sm-3 control-label">Vector space</label>
                     <div class="col-sm-8">
@@ -139,25 +137,25 @@
                     <div class="form-group">
                         <label for="inputEmail3" class="col-sm-3 control-label">Ngram size</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" id="ngram_size" value="1">
+                            <input type="text" class="form-control" value="1" id="ngram-size-id" name='ngram-size-name'>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="inputEmail3" class="col-sm-3 control-label">MFI</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" id="ngram_size" value="100">
+                            <input type="text" class="form-control" value="100" id="mfi-id" name='mfi-name'>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="inputEmail3" class="col-sm-3 control-label">Minimum DF</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" id="ngram_size" value="0.0">
+                            <input type="text" class="form-control" value="0.0" id="min-df-id" name='min-df-name'>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="inputEmail3" class="col-sm-3 control-label">Maximum DF</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" id="ngram_size" value="0.90">
+                            <input type="text" class="form-control" value="0.90" id="max-df-id" name='max-df-name'>
                         </div>
                     </div>
                 </form>
