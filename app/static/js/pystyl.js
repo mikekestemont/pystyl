@@ -1,34 +1,17 @@
 $(document).ready(function() {
+
     $("#import-btn").click(function() {
         var data = $('#import-settings-id').serializeArray();
         console.log(data);
 
-        var control = document.getElementById("files-id");
-control.addEventListener("change", function(event) {
-
-    // When the control has changed, there are new files
-
-    var i = 0,
-        files = control.files,
-        len = files.length;
-
-    for (; i < len; i++) {
-        console.log("Filename: " + files[i].name);
-        console.log("Type: " + files[i].type);
-        console.log("Size: " + files[i].size + " bytes");
-    }
-
-}, false);
-
         $.ajax({
           contentType: 'application/json;charset=UTF-8',
-          url: 'processResults',
+          url: 'import_corpus',
           data: JSON.stringify(data),
           type: 'POST',
           dataType: 'json',
           success: function (r) {
             console.log(r);
-            $("#image-output").html(r['message']);
           }
         })
     });
@@ -39,13 +22,12 @@ control.addEventListener("change", function(event) {
 
         $.ajax({
           contentType: 'application/json;charset=UTF-8',
-          url: 'processResults',
+          url: 'preprocess_corpus',
           data: JSON.stringify(data),
           type: 'POST',
           dataType: 'json',
           success: function (r) {
             console.log(r);
-            $("#image-output").html(r['message']);
           }
         })
     });
@@ -56,13 +38,12 @@ control.addEventListener("change", function(event) {
 
         $.ajax({
           contentType: 'application/json;charset=UTF-8',
-          url: 'processResults',
+          url: 'feature_extraction',
           data: JSON.stringify(data),
           type: 'POST',
           dataType: 'json',
           success: function (r) {
             console.log(r);
-            $("#image-output").html(r['message']);
           }
         })
     });
@@ -73,7 +54,7 @@ control.addEventListener("change", function(event) {
 
         $.ajax({
           contentType: 'application/json;charset=UTF-8',
-          url: 'processResults',
+          url: 'visualize',
           data: JSON.stringify(data),
           type: 'POST',
           dataType: 'json',

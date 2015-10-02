@@ -22,9 +22,9 @@
                 <form class="form-horizontal" id="import-settings-id" name='import-settings-name'>
                     <div class="form-group">&nbsp;</div> <!-- just add some vertical space -->
                     <div class="form-group">
-                        <label for="inputEmail3" class="col-sm-3 control-label">Input files</label>
+                        <label for="inputEmail3" class="col-sm-3 control-label">Path to corpus</label>
                         <div class="col-sm-8">
-                            <span class="btn btn-file"><input type="file" id="files-id" name='files-name' multiple/></span>
+                            <input type="text" class="form-control" value="/Users/mike/GitRepos/pystyl/data/dummy" id="files-id" name='files-name'>
                         </div>
                     </div>
 
@@ -38,14 +38,14 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Remove non-alpha</label>
                         <div class="col-sm-8">
-                            <input type="checkbox" id="remove-alpha-id" name='remove-alpha-name'>
+                            <input type="checkbox" id="remove-alpha-id" name='remove-alpha-name' checked>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Lowercase</label>
                         <div class="col-sm-8">
-                            <input type="checkbox" id="lowercase-id" name='lowercase-name'>
+                            <input type="checkbox" id="lowercase-id" name='lowercase-name' checked>
                         </div>
                     </div>
                 </form>
@@ -63,9 +63,17 @@
                     <div class="col-sm-8">
                         <div class="form-group">
                             <select class="form-control" id="language-id" name='language-name'>
-                                <option>English</option>
-                                <option>Dutch</option>
+                                <option>en</option>
+                                <option>nl</option>
                                 <option>Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <label class="col-sm-3 control-label">Tokenizer</label>
+                    <div class="col-sm-8">
+                        <div class="form-group">
+                            <select class="form-control" id="tokenizer-option-id" name='tokenizer-option-name'>
+                                <option>whitespace</option>
                             </select>
                         </div>
                     </div>
@@ -73,13 +81,13 @@
                     <div class="form-group">
                         <label for="inputEmail3" class="col-sm-3 control-label">Minimum size</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" value="2500" id="min-size-id" name='min-size-name'>
+                            <input type="text" class="form-control" value="0" id="min-size-id" name='min-size-name'>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="max_size" class="col-sm-3 control-label">Maximum size</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" value="0" id="max-size-id" name='max-size-name'>
+                            <input type="text" class="form-control" value="10000" id="max-size-id" name='max-size-name'>
                         </div>
                     </div>
                     <div class="form-group">
@@ -97,7 +105,7 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Remove pronouns</label>
                         <div class="col-sm-8">
-                            <input type="checkbox" id="remove-pronouns-id" name='remove-pronouns-name'>
+                            <input type="checkbox" id="remove-pronouns-id" name='remove-pronouns-name' checked>
                         </div>
                     </div>
                     <div class="form-group">
@@ -121,10 +129,11 @@
                     <div class="col-sm-8">
                         <div class="form-group">
                             <select class="form-control" id="vector-space-id" name='vector-space-name'>
-                                <option>Tf</option>
-                                <option>Scaled</option>
-                                <option>Std</option>
-                                <option>TfIdf</option>
+                                <option>tf</option>
+                                <option>tf_scaled</option>
+                                <option>tf_std</option>
+                                <option>tf_idf</option>
+                                <option>bin</option>
                             </select>
                         </div>
                     </div>
@@ -133,9 +142,9 @@
                     <div class="col-sm-8">
                         <div class="form-group">
                             <select class="form-control" id="feature-type-id" name='feature-type-name'>
-                                <option>Words</option>
-                                <option>Characters</option>
-                                <option>Characters (in words)</option>
+                                <option>word</option>
+                                <option>char</option>
+                                <option>char_wb</option>
                             </select>
                         </div>
                     </div>
