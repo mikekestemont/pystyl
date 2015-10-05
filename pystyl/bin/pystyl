@@ -22,7 +22,9 @@ e = Experiment(mode='CMD_LINE')
 # load data:
 e.import_data(directory=config.get('import', 'input_dir'),
               alpha_only=config.getboolean('import', 'alpha_only'),
-              lowercase=config.getboolean('import', 'lowercase'))
+              lowercase=config.getboolean('import', 'lowercase'),
+              extension=config.get('import', 'extension'),
+              )
 
 # preprocess the data:
 e.preprocess(min_size=config.getint('preprocessing', 'min_size'),
@@ -32,7 +34,8 @@ e.preprocess(min_size=config.getint('preprocessing', 'min_size'),
               step_size=config.getint('preprocessing', 'step_size'),
               rm_pronouns=config.getboolean('preprocessing', 'rm_pronouns'),
               language=config.get('preprocessing', 'language'),
-              rm_tokens=None)
+              rm_tokens=None,
+              )
 
 # extract features:
 e.extract_features(mfi=config.getint('features', 'mfi'),
@@ -40,8 +43,12 @@ e.extract_features(mfi=config.getint('features', 'mfi'),
               ngram_size=config.getint('features', 'ngram_size'),
               vector_space=config.get('features', 'vector_space'),
               min_df=config.getfloat('features', 'min_df'),
-              max_df=config.getfloat('features', 'max_df'))
+              max_df=config.getfloat('features', 'max_df'),
+              )
 
 # visualize the analysis:
-e.visualize(outputfile=config.get('visualization', 'outputfile'))
+e.visualize(outputfile=config.get('visualization', 'outputfile'),
+              type=config.get('visualization', 'type'),
+              metric=config.get('visualization', 'metric'),
+              )
 

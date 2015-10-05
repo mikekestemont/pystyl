@@ -1,6 +1,6 @@
 from . corpus import Corpus
-from . analysis import pca, tsne, distance_matrix, hierarchical_clustering, vnc_clustering, bootstrapped_distance_matrices, bootstrap_consensus_tree
-from . visualization import scatterplot, scatterplot_3d, clustermap, scipy_dendrogram, ete_dendrogram, bct_dendrogram
+from . analysis import *
+from . visualization import *
 
 class Experiment:
     """
@@ -15,8 +15,9 @@ class Experiment:
         self.corpus = Corpus()
         self.mode = mode
 
-    def import_data(self, directory, alpha_only, lowercase):
-        self.corpus.add_directory(directory=directory)
+    def import_data(self, directory, alpha_only, lowercase, extension):
+        self.corpus.add_directory(directory=directory,
+                                  ext=extension)
         self.corpus.preprocess(alpha_only=alpha_only,
                                lowercase=lowercase)
 
@@ -39,19 +40,52 @@ class Experiment:
                          ngram_size=ngram_size,
                          vector_space=vector_space)
 
-    def visualize(self, outputfile):
-        pca_coor, pca_loadings = pca(self.corpus)
+    def visualize(self, outputfile=None, type='pca', metric='minmax'):
         save, return_svg = False, False
         if self.mode == 'CMD_LINE':
             save = True
         if self.mode == 'GUI':
             return_svg = True
-        scatterplot(self.corpus,
+
+        if type == 'pca':
+            pca_coor, pca_loadings = pca(self.corpus)
+            return scatterplot(self.corpus,
                     coor=pca_coor,
                     loadings=pca_loadings,
                     outputfile=outputfile,
                     save=save,
                     return_svg=return_svg)
+        elif type == 'pca_3d':
+            pca_coor, pca_loadings = pca(self.corpus,
+                                          nb_dimensions=3)
+            pca_matrix_3d, _ = pca(self.corpus, nb_dimensions=3)
+            return scatterplot_3d(self.corpus,
+                    coor=pca_coor,
+                    outputfile=outputfile,
+                    save=save,
+                    return_svg=return_svg)
+        elif type == 'clustermap':
+            dm = distance_matrix(self.corpus,
+                                 metric=metric)
+            return clustermap(self.corpus,
+                    distance_matrix=dm,
+                    fontsize=8,
+                    outputfile=outputfile,
+                    save=save,
+                    return_svg=return_svg)
+        elif type == 'dendrogram':
+            dm = distance_matrix(self.corpus,
+                    metric=metric)
+            cluster_tree = hierarchical_clustering(dm,
+                    linkage='ward')
+            ete_dendrogram(corpus=self.corpus,
+                    tree=cluster_tree,
+                    fontsize=8,
+                    mode='c',
+                    outputfile=outputfile,
+                    save=save,
+                    return_svg=return_svg)
+
 
 
 
