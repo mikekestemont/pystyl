@@ -5,10 +5,7 @@ import sys
 import os
 import ConfigParser
 
-from pystyl.corpus import Corpus
 from pystyl.experiment import Experiment
-from pystyl.analysis import pca, tsne, distance_matrix, hierarchical_clustering, vnc_clustering
-from pystyl.visualization import scatterplot, scatterplot_3d, clustermap, scipy_dendrogram, ete_dendrogram
 
 # parse the config file
 config_path = os.path.expanduser(sys.argv[1])
@@ -48,7 +45,7 @@ e.extract_features(mfi=config.getint('features', 'mfi'),
 
 # visualize the analysis:
 e.visualize(outputfile=config.get('visualization', 'outputfile'),
-              type=config.get('visualization', 'type'),
+              viz_type=config.get('visualization', 'viz_type'),
               metric=config.get('visualization', 'metric'),
               )
 

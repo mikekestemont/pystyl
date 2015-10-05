@@ -40,14 +40,14 @@ class Experiment:
                          ngram_size=ngram_size,
                          vector_space=vector_space)
 
-    def visualize(self, outputfile=None, type='pca', metric='minmax'):
+    def visualize(self, outputfile=None, viz_type='pca', metric='minmax'):
         save, return_svg = False, False
         if self.mode == 'CMD_LINE':
             save = True
         if self.mode == 'GUI':
             return_svg = True
 
-        if type == 'pca':
+        if viz_type == 'pca':
             pca_coor, pca_loadings = pca(self.corpus)
             return scatterplot(self.corpus,
                     coor=pca_coor,
@@ -55,7 +55,7 @@ class Experiment:
                     outputfile=outputfile,
                     save=save,
                     return_svg=return_svg)
-        elif type == 'pca_3d':
+        elif viz_type == 'pca_3d':
             pca_coor, pca_loadings = pca(self.corpus,
                                           nb_dimensions=3)
             pca_matrix_3d, _ = pca(self.corpus, nb_dimensions=3)
@@ -64,7 +64,7 @@ class Experiment:
                     outputfile=outputfile,
                     save=save,
                     return_svg=return_svg)
-        elif type == 'clustermap':
+        elif viz_type == 'clustermap':
             dm = distance_matrix(self.corpus,
                                  metric=metric)
             return clustermap(self.corpus,
@@ -73,7 +73,7 @@ class Experiment:
                     outputfile=outputfile,
                     save=save,
                     return_svg=return_svg)
-        elif type == 'dendrogram':
+        elif viz_type == 'dendrogram':
             dm = distance_matrix(self.corpus,
                     metric=metric)
             cluster_tree = hierarchical_clustering(dm,

@@ -182,13 +182,46 @@
             </div> <!-- end of features tab -->
 
             <div class="tab-pane" id="visualize">
-                <h1>Visualize</h1>
-                <p>yellow yellow yellow yellow yellow</p>
-                <div class='text-center'>
-                    <button type="button" id="visualize-btn" class="btn btn-default">
-                        <span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span> visualize
-                    </button>
-                </div>
+                <form class="form-horizontal" id="visualize-settings-id" name='visualize-settings-name'>                
+                    <div class="form-group">&nbsp;</div>
+                    <label class="col-sm-3 control-label">Plot type</label>
+                    <div class="col-sm-8">
+                        <div class="form-group">
+                            <select class="form-control" id="viz-type-id" name='viz-type-name'>
+                                <option>pca</option>
+                                <option>pca_3d</option>
+                                <option>clustermap</option>
+                                <option>dendogram</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">&nbsp;</div>
+                    <label class="col-sm-3 control-label">Metric</label>
+                    <div class="col-sm-8">
+                        <div class="form-group">
+                            <select class="form-control" id="metric-id" name='metric-name'>
+                                <option>minmax</option>
+                                <option>manhattan</option>
+                                <option>euclidean</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">&nbsp;</div> <!-- just add some vertical space -->
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-3 control-label">Path to output file</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" value="/Users/mike/Desktop/pystyl_test.pdf" id="outputfilename-id" name='outputfilename-name'>
+                        </div>
+                    </div>
+
+                    <div class='text-center'>
+                        <button type="button" id="visualize-btn" class="btn btn-default">
+                            <span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span> visualize
+                        </button>
+                    </div>
+
+                </form>
             </div> <!-- end of visualisation tab-->
 
         </div>
@@ -197,7 +230,7 @@
     </div> <!-- end of left panel -->
 
     <div class="col-sm-6"> <!-- begin of right panel -->
-        <h4>output</h4>
+        <h4>Output</h4>
         <div id="image-output"></div>
     </div> <!-- end of right panel -->
 

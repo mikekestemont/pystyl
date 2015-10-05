@@ -25,6 +25,6 @@ max_df = 1.0
 min_df = 0.0
 
 [visualization]
-type = dendrogram
+viz_type = dendrogram
 metric = minmax
 outputfile = /Users/mike/Desktop/pystyl_test.pdf
