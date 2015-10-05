@@ -55,6 +55,7 @@ class Experiment:
                     outputfile=outputfile,
                     save=save,
                     return_svg=return_svg)
+
         elif viz_type == 'pca_3d':
             pca_coor, pca_loadings = pca(self.corpus,
                                           nb_dimensions=3)
@@ -64,6 +65,7 @@ class Experiment:
                     outputfile=outputfile,
                     save=save,
                     return_svg=return_svg)
+
         elif viz_type == 'clustermap':
             dm = distance_matrix(self.corpus,
                                  metric=metric)
@@ -73,6 +75,7 @@ class Experiment:
                     outputfile=outputfile,
                     save=save,
                     return_svg=return_svg)
+        
         elif viz_type == 'dendrogram':
             dm = distance_matrix(self.corpus,
                     metric=metric)
