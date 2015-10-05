@@ -61,5 +61,8 @@ def visualize():
         print('visualize')
         data = {i['name']:i['value'] for i in flask.request.get_json()}
         data = defaultdict(lambda:None, data)
-        svg_str = experiment.visualize()
+        svg_str = e.visualize(outputfile=data['outputfile'],
+                    viz_type=data['viz-type'],
+                    metric=data['metric'],
+        )
         return json.dumps({"message": svg_str})
