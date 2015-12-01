@@ -44,7 +44,7 @@ def get_tokenizer(option=None):
 class Corpus:
 
     def __init__(self, texts=[], titles=[], target_ints=[],
-                       target_idx={}, language=None, tokenized_texts=None):
+                       target_idx=[], language=None, tokenized_texts=None):
         """
         A class to represent corpora or a collection of texts. Note
         that titles should be unique.
