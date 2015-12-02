@@ -227,7 +227,7 @@ class Corpus:
             if self.max_size:
                 tokens = tokens[:self.max_size] # cut
             if self.min_size and len(tokens) < self.min_size:
-                print("Title: %s only has %d tokens (< sample_size = %d) -> ignored" % (self.titles[i], len(text)))
+                print("Title: %s only has %d tokens (< min_size = %d) -> ignored" % (self.titles[i], len(text), min_size))
                 continue
             self.tokenized_texts.append(tokens)
 
