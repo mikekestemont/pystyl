@@ -89,11 +89,13 @@ class Corpus:
             self.texts, self.titles, self.target_ints = [], [], []
 
         for filename in sorted(glob.glob(directory+'/*.'+ext)):
-            if filename.startswith('.'):
+
+            basename = os.path.basename(filename)
+            if basename.startswith('.'):
                 continue
 
-            if '_' not in filename or not filename.endswith('.'+ext) or filename.count('_') > 1:
-                raise ValueError('Filename: '+filename+' wrongly formatted (should be: category_title.ext)')
+            if '_' not in basename or not basename.endswith('.'+ext) or basename.count('_') > 1:
+                raise ValueError('Filename: '+basename+' wrongly formatted (should be: category_title.ext)')
 
             with codecs.open(filename, mode='r', encoding=encoding) as infile:
                 text = infile.read()
