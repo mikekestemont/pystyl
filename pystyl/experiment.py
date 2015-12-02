@@ -81,7 +81,7 @@ class Experiment:
                     metric=metric)
             cluster_tree = hierarchical_clustering(dm,
                     linkage='ward')
-            ete_dendrogram(corpus=self.corpus,
+            return ete_dendrogram(corpus=self.corpus,
                     tree=cluster_tree,
                     fontsize=8,
                     mode='c',
