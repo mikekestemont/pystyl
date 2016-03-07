@@ -46,10 +46,13 @@ class StdDevScaler(BaseEstimator):
         ----------
         X : array-like, shape [n_samples, n_features]
             The data used to compute the column-wise
-            standard deviation.
+            standard deviation. Acceprs
 
         """
-        self.weights_ = StandardScaler(with_mean=False).fit(X).std_
+        if sp.isspmatrix_csr(X):
+            self.weights_ = np.std(X.toarray(), axis=1)
+        else:
+            self.weights_ = np.std(X, axis=1)
         return self
 
     def transform(self, X):
@@ -61,7 +64,8 @@ class StdDevScaler(BaseEstimator):
         ----------
         X : array-like, shape [n_samples, n_features]
             Input data that will be transformed.
-            Supports sparse input.
+            Supports sparse input (i.e. will return a sparse
+            matrix if X is sparse).
 
         Attributes
         ----------
@@ -74,12 +78,13 @@ class StdDevScaler(BaseEstimator):
             The scaled input data in sparse format.
 
         """
-        if not sp.isspmatrix_csr(X): # convert to sparse format if needed:
-            X = sp.csr_matrix(X, dtype=np.float64)
-        for i in range(X.shape[0]):
-            start, end = X.indptr[i], X.indptr[i+1]
-            X.data[start:end] /= self.weights_[X.indices[start:end]]
-        return X
+        if sp.isspmatrix_csr(X):
+            X = X.toarray()
+            X /= self.weights_[:, None]
+            return sp.csr_matrix(X)
+        else:
+            X /= self.weights_[:, None]
+            return X
 
     def fit_transform(self, X, y=None):
         """
@@ -88,8 +93,7 @@ class StdDevScaler(BaseEstimator):
         but more convenient.
 
         """
-        self.fit(X)
-        return self.transform(X)
+        return self.fit(X).transform(X)
 
 
 class Vectorizer:
@@ -202,7 +206,46 @@ class Vectorizer:
             v = CountVectorizer(**self.params)
             self.transformer = Pipeline([('s1', v)])
 
-    def vectorize(self, texts):
+    def fit(self, texts):
+        """
+        Fit the vectorizer.
+
+        Parameters
+        ----------
+        texts: 2D-list of strings
+            The texts in which to fit the vectorizer.
+            Assumed untokenized input in the case of
+            `ngram_type`='word', else expects
+            continguous strings.
+        
+        Returns
+        ----------
+        X: array-like, [n_texts, n_features]
+            Vectorized texts in sparse format.
+        """
+        self.transformer.fit(texts)
+        self.feature_names = self.transformer.named_steps['s1'].get_feature_names()
+
+    def transform(self, texts):
+        """
+        Fit the vectorizer.
+
+        Parameters
+        ----------
+        texts: 2D-list of strings
+            The texts in which to fit the vectorizer.
+            Assumed untokenized input in the case of
+            `ngram_type`='word', else expects
+            continguous strings.
+        
+        Returns
+        ----------
+        X: array-like, [n_texts, n_features]
+            Vectorized texts in sparse format.
+        """
+        return self.transformer.transform(texts)
+
+    def fit_transform(self, texts):
         """
         Vectorize input texts and store them in
         sparse format as `self.X`.
@@ -225,4 +268,5 @@ class Vectorizer:
         self.feature_names = self.transformer.named_steps['s1'].get_feature_names()
         return self.X
 
+    vectorize = fit_transform
 
