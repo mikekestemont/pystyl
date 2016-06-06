@@ -34,5 +34,6 @@ setup(
         'scipy',
         'pandas',
         'bokeh',
+        'dendropy',
     ],
 )
