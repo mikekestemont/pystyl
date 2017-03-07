@@ -9,7 +9,7 @@ if sys.version_info[0] == 2:
 elif sys.version_info[0] == 3:
     import pickle
 
-from sklearn.base import BaseEstimator
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
@@ -22,7 +22,7 @@ def identity(y):
     """
     return y
 
-class StdDevScaler(BaseEstimator):
+class StdDevScaler(BaseEstimator, TransformerMixin):
     """
     Scales a matrix through dividing cells
     by the column-wise standard deviations.
