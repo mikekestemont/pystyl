@@ -1,3 +1,7 @@
+"""
+This file performs visualization in Pystyl for the Manuscript Desk project. See https://manuscriptdesk.uantwerpen.be
+"""
+
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
@@ -7,6 +11,7 @@ import StringIO
 
 from sklearn.cluster import AgglomerativeClustering
 import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 import seaborn as sns
 from mpl_toolkits.mplot3d import Axes3D
 import pandas as pd

@@ -106,6 +106,38 @@ class Corpus:
                 else:
                     print("Ignored: "+filename+" (does not contain any text...)")
 
+    def add_texts_manuscriptdesk(self, texts_information_dict):
+        """
+        Add the information to the corpus for the manuscript desk
+
+        Parameters
+        ----------
+
+        texts_information_dict: dictionary with keys 'title', 'target_name', and 'text' (the full page text) in each entry.
+        Each entry reprents information of a single collection.
+        """
+
+        if not self.target_idx:
+            self.target_idx = []
+            self.texts, self.titles, self.target_ints = [], [], []
+
+        for i in texts_information_dict:
+
+            try:
+                title = texts_information_dict[i]['title']
+                target_name = texts_information_dict[i]['target_name']
+                text = texts_information_dict[i]['text']
+            except:
+                print(texts_information_dict)
+                sys.exit(1)
+
+            if text.strip():
+                self.add_text(text=text, title=title, target_name=target_name)
+
+            else:
+                print("Ignored:  (does not contain any text...)")
+                sys.exit(1)
+
     def add_text(self, text, title, target_name):
         """
         Add a single new text to the corpus.
