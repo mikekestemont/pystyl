@@ -50,9 +50,9 @@ class StdDevScaler(BaseEstimator, TransformerMixin):
 
         """
         if sp.isspmatrix_csr(X):
-            self.weights_ = np.std(X.toarray(), axis=1)
+            self.weights_ = np.std(X.toarray(), axis=0)
         else:
-            self.weights_ = np.std(X, axis=1)
+            self.weights_ = np.std(X, axis=0)
         return self
 
     def transform(self, X):
@@ -80,10 +80,10 @@ class StdDevScaler(BaseEstimator, TransformerMixin):
         """
         if sp.isspmatrix_csr(X):
             X = X.toarray()
-            X /= self.weights_[:, None]
+            X /= self.weights_
             return sp.csr_matrix(X)
         else:
-            X /= self.weights_[:, None]
+            X /= self.weights_
             return X
 
     def fit_transform(self, X, y=None):
