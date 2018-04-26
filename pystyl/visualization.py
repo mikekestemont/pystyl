@@ -3,7 +3,10 @@ from __future__ import print_function
 
 import os
 import sys
-import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 from sklearn.cluster import AgglomerativeClustering
 import matplotlib.pyplot as plt
@@ -94,8 +97,8 @@ def static_scatterplot(corpus, coor=None, outputfile=None,
         ValueError('Please specify valid (2D) coordinates')
 
     sns.set_style('dark')
-    sns.plt.rcParams['axes.linewidth'] = 0.4
-    fig, ax1 = sns.plt.subplots()  
+    plt.rcParams['axes.linewidth'] = 0.4
+    fig, ax1 = plt.subplots()  
 
     labels = corpus.titles
     # first plot slices:
@@ -139,9 +142,9 @@ def static_scatterplot(corpus, coor=None, outputfile=None,
     ax1.set_yticklabels([])
     ax1.set_yticks([])
     if save:
-        sns.plt.savefig(outputfile, bbox_inches=0)
+        plt.savefig(outputfile, bbox_inches=0)
     if show:
-        sns.plt.show()
+        plt.show()
     if return_svg:
         return plt_fig_to_svg(fig)
 
@@ -336,7 +339,7 @@ def clustermap(corpus, distance_matrix=None, color_leafs=True,
             outputfile = os.path.expanduser(outputfile)
         cm.savefig(outputfile)
     if show:
-        sns.plt.show()
+        plt.show()
     if return_svg:
         return plt_fig_to_svg(cm)
     

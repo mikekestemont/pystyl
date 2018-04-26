@@ -101,7 +101,7 @@ class Dendrogram(list):
         plt.clf()
         if outputfile:
             outputfile = os.path.expanduser(outputfile)
-        fig = sns.plt.figure()
+        fig = plt.figure()
         ax = fig.add_subplot(111, axisbg='white')
         plt.rcParams['font.family'] = 'arial'
         plt.rcParams['font.size'] = 6
@@ -112,7 +112,7 @@ class Dendrogram(list):
                              leaf_font_size=fontsize,
                              color_threshold=0.7*max(m[:,2]),
                              leaf_rotation=180)
-        ax = sns.plt.gca()
+        ax = plt.gca()
         for idx, label in enumerate(ax.get_xticklabels()):
             label.set_rotation('vertical')
             label.set_fontname('Arial')
@@ -126,19 +126,19 @@ class Dendrogram(list):
         ax.spines['bottom'].set_visible(False)
         ax.spines['left'].set_visible(False)
         ax.xaxis.set_ticks_position('bottom')
-        sns.plt.xticks(rotation=90)
-        sns.plt.tick_params(axis='x', which='both', bottom='off', top='off')
-        sns.plt.tick_params(axis='y', which='both', bottom='off', top='off')
+        plt.xticks(rotation=90)
+        plt.tick_params(axis='x', which='both', bottom='off', top='off')
+        plt.tick_params(axis='y', which='both', bottom='off', top='off')
         ax.xaxis.grid(False)
         ax.yaxis.grid(False)
-        sns.plt.rcParams["figure.facecolor"] = "white"
-        sns.plt.rcParams["axes.facecolor"] = "white"
-        sns.plt.rcParams["savefig.facecolor"] = "white"
-        sns.plt.subplots_adjust(bottom=0.15)
+        plt.rcParams["figure.facecolor"] = "white"
+        plt.rcParams["axes.facecolor"] = "white"
+        plt.rcParams["savefig.facecolor"] = "white"
+        plt.subplots_adjust(bottom=0.15)
         if save:
             fig.savefig(outputfile)
         if show:
-            sns.plt.show()
+            plt.show()
         if return_svg:
             return plt_fig_to_svg(fig)
 
