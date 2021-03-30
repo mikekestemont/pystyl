@@ -12,7 +12,7 @@ from operator import itemgetter
 
 import numpy as np
 from scipy.cluster.hierarchy import dendrogram as scipy_dendrogram
-from scipy.cluster.hierarchy import to_tree
+from scipy.cluster.hierarchy import to_tree, ClusterNode
 import pylab
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -20,7 +20,8 @@ import seaborn as sns
 if sys.version_info[0] == 2:
     from ete2 import Tree, faces, AttrFace, TreeStyle, NodeStyle, TextFace, Face
 elif sys.version_info[0] == 3:
-    from ete3 import Tree, faces, AttrFace, TreeStyle, NodeStyle, TextFace, Face
+    from ete3 import Tree
+    from ete3.treeview import AttrFace, NodeStyle, TextFace, TreeStyle, faces, Face
 
 from .. visualization import plt_fig_to_svg
 
@@ -28,7 +29,6 @@ class DendrogramNode(object):
     """
     Represents a node in a dendrogram.
     """
-    
     def __init__(self, id, *children):
         self.id = id
         self.distance = 0.0
@@ -62,6 +62,24 @@ class DendrogramNode(object):
 
     def __len__(self):
         return len(self.leaves())
+
+
+class HashableNode:
+    """
+    :class:`ClusterNode` is not hashable for some reason, so it won't work
+    in ETE. This class adds the necessary functions, based on :data:`id`.
+    """
+    def __init__(self, cluster_node: ClusterNode):
+        self.node = cluster_node
+
+    def __eq__(self, other):
+        return self.node.id == other.node.id
+
+    def __hash__(self):
+        return hash(self.node.id)
+
+    def __getattr__(self, attr: str):
+        return getattr(self.node, attr)
 
 
 class Dendrogram(list):
@@ -102,7 +120,7 @@ class Dendrogram(list):
         if outputfile:
             outputfile = os.path.expanduser(outputfile)
         fig = plt.figure()
-        ax = fig.add_subplot(111, axisbg='white')
+        ax = fig.add_subplot(111, facecolor='white')
         plt.rcParams['font.family'] = 'arial'
         plt.rcParams['font.size'] = 6
         plt.rcParams['lines.linewidth'] = 0.75
@@ -118,7 +136,7 @@ class Dendrogram(list):
             label.set_fontname('Arial')
             label.set_fontsize(fontsize)
             if color_leafs:
-                label.set_color(plt.cm.spectral(corpus.target_ints[idx] / 10.))
+                label.set_color(plt.cm.get_cmap('nipy_spectral')(corpus.target_ints[idx] / 10.))
 
         ax.get_yaxis().set_ticks([])
         ax.spines['right'].set_visible(False)
@@ -147,10 +165,10 @@ class Dendrogram(list):
         root = Tree()
         root.dist = 0
         root.name = "root"
-        item2node = {T: root}
+        item2node = {HashableNode(T): root}
         to_visit = [T]
         while to_visit:
-            node = to_visit.pop()
+            node = HashableNode(to_visit.pop())
             cl_dist = node.dist / 2.0
             for ch_node in [node.left, node.right]:
                 if ch_node:
@@ -158,7 +176,7 @@ class Dendrogram(list):
                     ch.dist = cl_dist
                     ch.name = str(ch_node.id)
                     item2node[node].add_child(ch)
-                    item2node[ch_node] = ch
+                    item2node[HashableNode(ch_node)] = ch
                     to_visit.append(ch_node)
 
         if labels != None:

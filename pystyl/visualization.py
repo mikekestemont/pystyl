@@ -19,7 +19,8 @@ from bokeh.plotting import figure, show, output_file, save
 if sys.version_info[0] == 2:
     from ete2 import Tree, faces, AttrFace, TreeStyle, NodeStyle, TextFace, Face
 elif sys.version_info[0] == 3:
-    from ete3 import Tree, faces, AttrFace, TreeStyle, NodeStyle, TextFace, Face
+    from ete3 import Tree
+    from ete3.treeview import AttrFace, NodeStyle, TextFace, TreeStyle, faces, Face
 
 def plt_fig_to_svg(fig):
     imgdata = StringIO.StringIO()
@@ -111,12 +112,12 @@ def static_scatterplot(corpus, coor=None, outputfile=None,
         # add slice names:
         for x, y, name, cluster_label in zip(x1, x2, labels, clustering.labels_):
             ax1.text(x, y, name, ha='center', va="center",
-                     color=plt.cm.spectral(cluster_label / 10.),
+                     color=plt.cm.get_cmap('nipy_spectral')(cluster_label / 10.),
                      fontdict={'family': 'Arial', 'size': 10})
     else:
         for x, y, name, cluster_label in zip(x1, x2, labels, corpus.target_ints):
             ax1.text(x, y, name, ha='center', va="center",
-                     color=plt.cm.spectral(cluster_label / 10.),
+                     color=plt.cm.get_cmap('nipy_spectral')(cluster_label / 10.),
                      fontdict={'family': 'Arial', 'size': 10})
     try:
         # now loadings on twin axis:
@@ -267,14 +268,14 @@ def scatterplot_3d(corpus, coor, outputfile,
         # add slice names:
         for x, y, z, name, cluster_label in zip(x1, x2, x3, labels, clustering.labels_):
             ax.text(x, y, z, name, ha='center', va="center",
-                     color=plt.cm.spectral(cluster_label / 10.),
+                     color=plt.cm.get_cmap('nipy_spectral')(cluster_label / 10.),
                      fontdict={'family': 'Arial', 'size': 7})
     else:
         for x, y, z in zip(x1, x2, x3):
             ax.scatter(x, y, z, edgecolors='none', facecolors='none')
         for x, y, z, name, cluster_label in zip(x1, x2, x3, labels, corpus.target_ints):
             ax.text(x, y, z, name, ha='center', va="center",
-                     color=plt.cm.spectral(cluster_label / 10.),
+                     color=plt.cm.get_cmap('nipy_spectral')(cluster_label / 10.),
                      fontdict={'family': 'Arial', 'size': 10})
     if save:
         plt.savefig(outputfile, bbox_inches=0)
@@ -325,7 +326,7 @@ def clustermap(corpus, distance_matrix=None, color_leafs=True,
         label.set_fontname('Arial')
         label.set_fontsize(fontsize)
         if color_leafs:
-            label.set_color(plt.cm.spectral(corpus.target_ints[idx] / 10.))
+            label.set_color(plt.cm.get_cmap('nipy_spectral')(corpus.target_ints[idx] / 10.))
 
     # ylabels:
     for idx, label in enumerate(ax.get_yticklabels()):
@@ -333,7 +334,7 @@ def clustermap(corpus, distance_matrix=None, color_leafs=True,
         label.set_fontname('Arial')
         label.set_fontsize(fontsize)
         if color_leafs:
-            label.set_color(plt.cm.spectral(corpus.target_ints[-idx-1] / 10.)) # watch out: different indexing on this axis
+            label.set_color(plt.cm.get_cmap('nipy_spectral')(corpus.target_ints[-idx-1] / 10.)) # watch out: different indexing on this axis
     if save:
         if outputfile:
             outputfile = os.path.expanduser(outputfile)
